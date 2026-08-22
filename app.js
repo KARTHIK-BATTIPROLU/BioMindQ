@@ -193,12 +193,12 @@ function animate() {
   currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
 
   if (dnaGroup) {
-    // Transition position.x: centered (0.0) -> far right side (2.5) when scrolling DOWN
-    const targetX = window.innerWidth < 768 ? 0.8 : 2.5;
+    // Transition position.x: centered (0.0) -> far right side (3.2) when scrolling DOWN
+    const targetX = window.innerWidth < 768 ? 1.0 : 3.2;
     dnaGroup.position.x = THREE.MathUtils.lerp(0.0, targetX, currentScrollProgress);
     
-    // Transition scale: smaller (0.65) -> dramatically zoomed in (1.95) when scrolling DOWN
-    const scale = THREE.MathUtils.lerp(0.65, 1.95, currentScrollProgress);
+    // Transition scale: smaller (0.65) -> full close-up zoom (2.7) when scrolling DOWN
+    const scale = THREE.MathUtils.lerp(0.65, 2.7, currentScrollProgress);
     dnaGroup.scale.set(scale, scale, scale);
 
     // Continuous 3D rotation around Y axis
