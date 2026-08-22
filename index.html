@@ -7,14 +7,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>BioMindQ</title>
+  <title>BioMindQ // Evidence-Grounded Biomedical AI</title>
   
   <!-- Premium Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=10.0.0">
+  <link rel="stylesheet" href="styles.css?v=11.0.0">
 
   <!-- Three.js Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -25,15 +25,370 @@
   <!-- Fullscreen 3D WebGL Canvas Layer -->
   <div id="canvas-stage" class="canvas-stage"></div>
 
-  <!-- Left Side Project Title -->
-  <div class="brand-hero-left" id="brand-hero" translate="no">
-    <div class="brand-kicker" id="brand-kicker">NEXT-GEN COMPUTATIONAL DNA</div>
-    <h1 class="brand-title" id="brand-title">BioMindQ</h1>
-  </div>
+  <!-- Hero Section Shell -->
+  <section class="hero-section">
+    <div class="brand-hero-left" id="brand-hero" translate="no">
+      <div class="brand-kicker" id="brand-kicker">NEXT-GEN COMPUTATIONAL DNA</div>
+      <h1 class="brand-title" id="brand-title">BioMindQ</h1>
+      <p class="hero-problem-statement">
+        Biomedical answers you can verify — not just AI that sounds right. BioMindQ cross-checks every response against PubMed, ChEMBL, DrugBank, and PubChem before it reaches you.
+      </p>
+      <div class="hero-cta-wrapper">
+        <a href="http://localhost:3001" class="btn-primary-hero cta-chatbot-link">
+          Launch Research Console &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
 
-  <!-- Hidden Scroll Container for Touchpad / Mouse Pad Scroll -->
-  <div class="scroll-container"></div>
+  <!-- Landing Content Sections -->
+  <main class="landing-content">
+    
+    <!-- 01.5 / THE RESEARCH CRISIS -->
+    <section class="section-container" id="problem">
+      <div class="section-inner">
+        <div class="eyebrow">01.5 / THE RESEARCH CRISIS</div>
+        <h2 class="section-title">Generic AI guesses. Biomedical research can't afford that.</h2>
+        
+        <div class="cards-grid grid-3">
+          <div class="info-card problem-card">
+            <h3 class="card-head">Fabricated citations</h3>
+            <p class="card-desc">Generic chatbots generate fluent, confident answers with no real source behind them.</p>
+            <div class="risk-pill">
+              <strong>Risk:</strong> a fabricated interaction or property can send research down a costly or unsafe path.
+            </div>
+          </div>
 
-  <script src="app.js?v=10.0.0"></script>
+          <div class="info-card problem-card">
+            <h3 class="card-head">Unstructured answers</h3>
+            <p class="card-desc">Compound data (dosage, interactions, chemical structure) gets flattened into prose a scientist then has to manually re-verify.</p>
+            <div class="risk-pill">
+              <strong>Risk:</strong> hours lost re-deriving what should have been a structured lookup.
+            </div>
+          </div>
+
+          <div class="info-card problem-card">
+            <h3 class="card-head">False confidence</h3>
+            <p class="card-desc">Most AI tools never say "I'm not sure" — they fill gaps with plausible guesses instead of flagging uncertainty.</p>
+            <div class="risk-pill">
+              <strong>Risk:</strong> undetected disagreement between sources looks identical to consensus.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02.0 / THE DIFFERENCE -->
+    <section class="section-container" id="comparison">
+      <div class="section-inner">
+        <div class="eyebrow">02.0 / THE DIFFERENCE</div>
+        <h2 class="section-title">Generic Generative AI vs. BioMindQ</h2>
+
+        <div class="table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Generic AI</th>
+                <th class="col-highlight">BioMindQ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cell-feature">Sourcing</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Hallucinated or absent citations</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Traceable PubMed / ChEMBL / DrugBank / PubChem IDs</td>
+              </tr>
+              <tr>
+                <td class="cell-feature">Evidence vs. summary</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Blended into one block of prose</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Retrieved evidence and AI synthesis clearly separated</td>
+              </tr>
+              <tr>
+                <td class="cell-feature">Confidence</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Uniformly confident, even when wrong</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Calibrated confidence score per answer</td>
+              </tr>
+              <tr>
+                <td class="cell-feature">Disagreement</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Conflicts between sources go unflagged</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Conflict / safety flags surfaced explicitly</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03.0 / VERIFIED, NOT JUST GENERATED -->
+    <section class="section-container" id="pipeline">
+      <div class="section-inner">
+        <div class="eyebrow">03.0 / VERIFIED, NOT JUST GENERATED</div>
+        <h2 class="section-title">Watch the pipeline work — not just the answer it produces.</h2>
+
+        <!-- Staged Pipeline Strip -->
+        <div class="pipeline-strip">
+          <div class="pipeline-step">
+            <span class="step-num font-mono">01</span>
+            <div class="step-content">
+              <span class="step-label">Query Received</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">02</span>
+            <div class="step-content">
+              <span class="step-label">Multi-Source Retrieval</span>
+              <span class="step-sub font-mono">PubMed / ChEMBL / PubChem / DrugBank</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">03</span>
+            <div class="step-content">
+              <span class="step-label">Cross-Verification</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">04</span>
+            <div class="step-content">
+              <span class="step-label">Answer, Labeled & Scored</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real Static Example Card -->
+        <div class="pipeline-example-card">
+          <div class="example-header">
+            <span class="badge-confidence font-mono">90% CONFIDENCE SCORE</span>
+          </div>
+
+          <!-- Verified Agreements -->
+          <div class="example-block agreement-block">
+            <div class="block-title title-green">✓ Verified Agreements</div>
+            <ul class="claim-list">
+              <li>Metformin activates AMPK, primarily by inhibiting mitochondrial complex I, which raises the cellular AMP/ATP ratio.</li>
+              <li>AMPK activation by metformin mediates many of its metabolic effects, including improved insulin sensitivity, inhibition of hepatic gluconeogenesis, and promotion of fatty-acid oxidation.</li>
+              <li>AMPK activation is implicated in metformin's reported benefits on aging, longevity, and cancer cell growth inhibition.</li>
+            </ul>
+          </div>
+
+          <!-- Conflict / Safety Flags -->
+          <div class="example-block conflict-block">
+            <div class="block-title title-amber">⚠ Conflict / Safety Flags</div>
+            <p class="conflict-text">No direct conflicts were identified in the retrieved evidence; all sources are consistent that metformin's primary downstream target is AMPK activation.</p>
+          </div>
+
+          <!-- Retrieved Evidence Cards -->
+          <div class="evidence-grid">
+            <div class="evidence-card">
+              <span class="evidence-tag tag-pubmed font-mono">PUBMED:42605874</span>
+              <p class="evidence-claim">Metformin activates AMPK, primarily by inhibiting mitochondrial complex I, which raises the cellular AMP/ATP ratio.</p>
+            </div>
+            <div class="evidence-card">
+              <span class="evidence-tag tag-pubmed font-mono">PUBMED:42599599</span>
+              <p class="evidence-claim">AMPK activation by metformin mediates metabolic effects such as improved insulin sensitivity, inhibition of hepatic gluconeogenesis, and promotion of fatty-acid oxidation.</p>
+            </div>
+            <div class="evidence-card">
+              <span class="evidence-tag tag-chembl font-mono">CHEMBL:CHEMBL1431</span>
+              <p class="evidence-claim">AMPK activation is implicated in metformin's reported benefits on aging, longevity, and inhibition of cancer cell growth.</p>
+            </div>
+          </div>
+
+          <!-- AI Summary Synthesis -->
+          <div class="synthesis-box">
+            <div class="synthesis-label font-mono">AI SUMMARY SYNTHESIS</div>
+            <blockquote class="synthesis-quote">
+              Metformin's principal downstream target is the energy-sensing kinase AMPK. The drug inhibits mitochondrial complex I, leading to an increased AMP/ATP ratio that allosterically activates AMPK. Once active, AMPK orchestrates a network of metabolic adaptations — enhancing insulin sensitivity, suppressing hepatic gluconeogenesis, and stimulating fatty-acid oxidation.
+            </blockquote>
+          </div>
+
+          <div class="disclaimer-strip">
+            Research and informational tool only — not intended for diagnosis or treatment.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 04.0 / HOW IT WORKS -->
+    <section class="section-container" id="methodology">
+      <div class="section-inner">
+        <div class="eyebrow">04.0 / HOW IT WORKS</div>
+        <h2 class="section-title">From question to verified answer, in four steps.</h2>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-badge-num font-mono">01</span>
+            <h3 class="step-title">Ask</h3>
+            <p class="step-text">You ask a question in plain language.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge-num font-mono">02</span>
+            <h3 class="step-title">Plan & Retrieve</h3>
+            <p class="step-text">The system determines which sources are relevant and queries them simultaneously.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge-num font-mono">03</span>
+            <h3 class="step-title">Cross-Verify</h3>
+            <p class="step-text">Results are compared across sources. Agreement raises confidence; conflicts are flagged, never hidden.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge-num font-mono">04</span>
+            <h3 class="step-title">Answer, Labeled</h3>
+            <p class="step-text">You get retrieved evidence and AI summary as two clearly separated parts, with a confidence score.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05.0 / TRY IT -->
+    <section class="section-container" id="use-cases">
+      <div class="section-inner">
+        <div class="eyebrow">05.0 / TRY IT</div>
+        <h2 class="section-title">Real questions researchers ask.</h2>
+
+        <div class="usecase-grid">
+          <a href="http://localhost:3001" class="usecase-card cta-chatbot-link">
+            <div class="usecase-tag font-mono">COMPOUND LOOKUP</div>
+            <p class="usecase-prompt">"What is known about metformin's interaction with AMPK?"</p>
+            <span class="usecase-action">Try Query &rarr;</span>
+          </a>
+          <a href="http://localhost:3001" class="usecase-card cta-chatbot-link">
+            <div class="usecase-tag font-mono">INTERACTION CHECK</div>
+            <p class="usecase-prompt">"Does ibuprofen interact with lisinopril?"</p>
+            <span class="usecase-action">Try Query &rarr;</span>
+          </a>
+          <a href="http://localhost:3001" class="usecase-card cta-chatbot-link">
+            <div class="usecase-tag font-mono">LITERATURE SCAN</div>
+            <p class="usecase-prompt">"Summarize recent findings on GLP-1 receptor agonists."</p>
+            <span class="usecase-action">Try Query &rarr;</span>
+          </a>
+          <a href="http://localhost:3001" class="usecase-card cta-chatbot-link">
+            <div class="usecase-tag font-mono">DISEASE OVERVIEW</div>
+            <p class="usecase-prompt">"What compounds are being studied for early-stage Alzheimer's?"</p>
+            <span class="usecase-action">Try Query &rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06.0 / SCOPE -->
+    <section class="section-container" id="boundaries">
+      <div class="section-inner">
+        <div class="eyebrow">06.0 / SCOPE</div>
+        <h2 class="section-title">What this is — and isn't.</h2>
+
+        <div class="scope-grid">
+          <div class="scope-box scope-is">
+            <h3 class="scope-head head-green">✓ What it is</h3>
+            <p class="scope-text">A research and literature-synthesis tool for biomedical professionals, grounded in PubMed, ChEMBL, DrugBank, and PubChem.</p>
+          </div>
+          <div class="scope-box scope-isnt">
+            <h3 class="scope-head head-red">✗ What it isn't</h3>
+            <p class="scope-text">Not a diagnostic tool. Not a substitute for a clinician. Not intended for patient-facing medical decisions.</p>
+          </div>
+        </div>
+
+        <div class="disclaimer-strip footer-disclaimer">
+          Research and informational tool only — not intended for diagnosis or treatment.
+        </div>
+      </div>
+    </section>
+
+    <!-- 07.0 / PLANS -->
+    <section class="section-container" id="pricing">
+      <div class="section-inner">
+        <div class="eyebrow">07.0 / PLANS</div>
+        <h2 class="section-title">Start free. Scale as your research does.</h2>
+
+        <div class="pricing-grid">
+          
+          <!-- Free Plan -->
+          <div class="pricing-card">
+            <div class="plan-name font-mono">Free</div>
+            <div class="plan-price">₹0<span class="price-period font-mono">/month</span></div>
+            <div class="plan-target">For students and independent researchers exploring the tool.</div>
+            <ul class="plan-features">
+              <li>10 verified queries / month</li>
+              <li>PubMed + ChEMBL + PubChem access</li>
+              <li>Confidence score & conflict flags</li>
+              <li>Standard response time</li>
+              <li>Community support</li>
+            </ul>
+            <a href="http://localhost:3001" class="btn-plan cta-chatbot-link">Get Started</a>
+          </div>
+
+          <!-- Researcher Plan -->
+          <div class="pricing-card card-featured">
+            <div class="featured-tag font-mono">MOST POPULAR</div>
+            <div class="plan-name font-mono">Researcher</div>
+            <div class="plan-price">₹1,499<span class="price-period font-mono">/month</span></div>
+            <div class="plan-subnote font-mono">or ₹14,990/year (~2 months free)</div>
+            <div class="plan-target">For active researchers and postdocs doing regular literature work.</div>
+            <ul class="plan-features">
+              <li>Unlimited verified queries</li>
+              <li>All four sources, including DrugBank</li>
+              <li>Priority response time</li>
+              <li>Saved query history & export (CSV/PDF)</li>
+              <li>Email support</li>
+            </ul>
+            <a href="http://localhost:3001" class="btn-plan btn-plan-featured cta-chatbot-link">Get Started</a>
+          </div>
+
+          <!-- Lab / Team Plan -->
+          <div class="pricing-card">
+            <div class="plan-name font-mono">Lab / Team</div>
+            <div class="plan-price">₹6,999<span class="price-period font-mono">/month per lab</span></div>
+            <div class="plan-subnote font-mono">up to 10 seats; custom above that</div>
+            <div class="plan-target">For research labs, pharma R&D teams, and institutions.</div>
+            <ul class="plan-features">
+              <li>Everything in Researcher, for the whole team</li>
+              <li>Shared query history across the lab</li>
+              <li>Admin controls & usage analytics</li>
+              <li>API access for internal tooling</li>
+              <li>Priority support + onboarding call</li>
+            </ul>
+            <a href="mailto:sales@biomindq.ai" class="btn-plan">Contact Sales</a>
+          </div>
+
+        </div>
+
+        <p class="pricing-footnote font-mono">
+          Indicative pricing for the Indian market — final rates may vary by institution size and usage volume.
+        </p>
+      </div>
+    </section>
+
+    <!-- Final CTA & Footer -->
+    <section class="section-container section-final-cta" id="final-cta">
+      <div class="section-inner text-center">
+        <h2 class="final-title">Ask your next research question with sources attached.</h2>
+        <div class="final-cta-btn-wrap">
+          <a href="http://localhost:3001" class="btn-primary-hero cta-chatbot-link">
+            Launch Research Console &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="footer-inner">
+        <div class="footer-brand font-mono">BioMindQ</div>
+        <div class="footer-note">
+          Research and informational tool only — not intended for diagnosis or treatment.
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="app.js?v=11.0.0"></script>
 </body>
 </html>
