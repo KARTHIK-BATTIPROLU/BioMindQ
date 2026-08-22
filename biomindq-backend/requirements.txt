@@ -8,6 +8,7 @@ pydantic>=2.6.4
 pydantic-settings>=2.2.1
 certifi>=2024.2.2
 passlib[bcrypt]>=1.7.4
+PyJWT>=2.8.0
 python-jose[cryptography]>=3.3.0
 networkx>=3.0
 pytest>=8.1.1
