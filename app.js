@@ -1,17 +1,16 @@
 /**
- * ENUMERA // 48,000 GPU PARTICLE QUANTUM DNA & MOLECULAR LIGAND DOCKING ENGINE
- * Custom GLSL ShaderMaterial • Simplex 3D Curl Noise • Real-Time Pharmacogenomics
+ * BIOMINDQ // MULTI-SOURCE BIOMEDICAL EVIDENCE VERIFICATION LAYER
+ * 48,000 Particle WebGL Engine & Real-Time Evidence Convergence Waveform
  */
 
 let scene, camera, renderer, controls;
 let autoOrbit = true;
-let isAudioActive = true;
+let isSessionActive = true;
 let audioCtx = null;
 let clock = new THREE.Clock();
 
 // Master 3D Objects
 let dnaParticleMesh, dnaShaderMaterial;
-let drugLigandGroup;
 let particleCount = 48000;
 
 // Active Sequence State
@@ -20,63 +19,77 @@ let activeSequence = [
   'A', 'T', 'G', 'C', 'C', 'G', 'T', 'A', 'A', 'T', 'C', 'G', 'T', 'A', 'G', 'C', 'A', 'T', 'G', 'C', 'G', 'C', 'A', 'T'
 ];
 
-// Active Drug Data
-const DRUG_DATA = {
-  trikafta: {
-    title: 'Elexacaftor-01 (100mg Solid Oral Tablet)',
-    desc: 'Direct-acting small molecule oral corrector that binds to the nucleotide-binding domain (NBD1) of mutant CFTR protein, restoring chloride ion transport across epithelial cell membranes.',
-    kd: 'Kd = 1.4 nM',
-    energy: '-14.2',
-    res: 't1/2 = 4.8 hr',
-    bio: '84.6% Oral',
-    pk: 'LogP = 3.2',
-    cl: 'Hepatic CYP3A4',
-    color: 0x00f0ff
+// Active Query State Data
+const QUERY_DATA = {
+  metformin: {
+    title: "Metformin ↔ AMPK Interaction",
+    desc: "Retrieved evidence indicates metformin activates AMPK indirectly via mitochondrial complex I inhibition. Confirmed independently across ChEMBL bioactivity records and 3 PubMed abstracts. No conflicting evidence found.",
+    confidence: "94.2%",
+    agreePct: "94.2%",
+    conflictPct: "0.0%",
+    responseTime: "4.1s",
+    badge: "3/3 SOURCES AGREE",
+    badgeClass: "badge-green",
+    pubmed: "3 Abstracts Verified",
+    chembl: "IC50 = 12.4 μM",
+    drugbank: "Target DB00331",
+    ticker: "CROSS-MATCHING PUBMED · ChEMBL · DRUGBANK · PUBCHEM"
   },
-  nusinersen: {
-    title: 'Nusinersen-X (Splice-Switching Oligonucleotide)',
-    desc: 'Synthetic 2\'-O-methoxyethyl phosphorothioate antisense oligonucleotide designed to hybridize to pre-mRNA and promote full-length SMN protein translation.',
-    kd: 'Kd = 0.8 nM',
-    energy: '-16.8',
-    res: 't1/2 = 135 days',
-    bio: 'Intrathecal / IV',
-    pk: 'Hydrophilic',
-    cl: 'Renal Excretion',
-    color: 0x00e676
+  alzheimers: {
+    title: "Early-Stage Alzheimer's Compounds",
+    desc: "Retrieved literature details anti-amyloid monoclonal antibodies (Lecanemab, Donanemab) and BACE1 inhibitors. Verified across 14 PubMed clinical trials and ChEMBL bioactivity assay datasets.",
+    confidence: "91.8%",
+    agreePct: "91.8%",
+    conflictPct: "0.5%",
+    responseTime: "3.8s",
+    badge: "4/4 SOURCES AGREE",
+    badgeClass: "badge-cyan",
+    pubmed: "14 Clinical Trials",
+    chembl: "287 Compounds",
+    drugbank: "CID 11954316",
+    ticker: "RETRIEVED 14 PUBMED TRIALS & 287 ChEMBL ASSAYS"
   },
-  casgevy: {
-    title: 'Exa-cel Prime (CRISPR BCL11A Editor)',
-    desc: 'Precision prime editing ribonucleoprotein complex targeting the erythroid-specific enhancer of BCL11A to reactivate fetal hemoglobin synthesis.',
-    kd: '99.98% Fidelity',
-    energy: '-19.4',
-    res: 'Permanent Edit',
-    bio: 'Lipid Nanoparticle',
-    pk: 'Nanoscale 85nm',
-    cl: 'Macrophage System',
-    color: 0xa855f7
+  ibuprofen: {
+    title: "Ibuprofen ↔ Lisinopril Interaction",
+    desc: "NSAIDs like ibuprofen reduce the antihypertensive effect of ACE inhibitors like lisinopril and increase renal toxicity risk. Verified across DrugBank DB01050 & 5 PubMed clinical advisories.",
+    confidence: "98.6%",
+    agreePct: "98.6%",
+    conflictPct: "12.4%",
+    responseTime: "2.9s",
+    badge: "HIGH-RISK CONFLICT",
+    badgeClass: "badge-rose",
+    pubmed: "5 Clinical Advisories",
+    chembl: "ACE Inhibitor Target",
+    drugbank: "DB01050 / DB00722",
+    ticker: "WARNING: RENAL ANTAGONISM CONFLICT DETECTED"
   },
-  patisiran: {
-    title: 'Patisiran-RNAi (Lipid Nanocarrier Formulation)',
-    desc: 'Small interfering RNA (siRNA) encapsulated in lipid nanoparticles formulated for targeted hepatocyte receptor-mediated endocytosis.',
-    kd: 't1/2 = 4.8 hr',
-    energy: '-12.6',
-    res: 't1/2 = 9.2 days',
-    bio: '78.2% Infusion',
-    pk: 'LogP = 2.8',
-    cl: 'Reticuloendothelial',
-    color: 0xffd600
+  glp1: {
+    title: "GLP-1 Receptor Agonist Synthesis",
+    desc: "Comprehensive literature scan reveals potent glycemic control, weight reduction, and cardiovascular risk reduction (Semaglutide, Tirzepatide). Grounded in 42 PubMed RCTs & ChEMBL binding affinity data.",
+    confidence: "96.5%",
+    agreePct: "96.5%",
+    conflictPct: "0.0%",
+    responseTime: "4.5s",
+    badge: "3/3 SOURCES AGREE",
+    badgeClass: "badge-gold",
+    pubmed: "42 RCT Papers",
+    chembl: "Ki = 0.21 nM",
+    drugbank: "Target DB06655",
+    ticker: "SYNTHESIZING 42 PUBMED PAPERS & ChEMBL BINDING DATA"
   }
 };
 
-let currentDrugKey = 'trikafta';
+let currentQueryKey = 'metformin';
 
 // Mouse Tracking
 let mouseX = 0, mouseY = 0;
 let targetCamX = 0, targetCamY = 0;
 
-// Telemetry Canvas
+// Telemetry Waveform Engine (4-Trace Source Agreement Signal)
 let waveCanvas, waveCtx;
-let waveX = 0, lastWaveY = 40;
+let waveX = 0;
+let waveConvergenceProgress = 1.0; // 0 = split traces, 1 = converged
+let convergenceAnimId = null;
 
 /* ==========================================================================
    GLSL SHADERS FOR 48,000 MOLECULAR BIOPHOTON PARTICLES
@@ -149,7 +162,6 @@ const vertexShader = `
   void main() {
     float t = uTime * 0.5 + aPhase;
 
-    // Organic Helical Curl Undulation
     vec3 noiseVec = vec3(
       snoise(position * 0.6 + vec3(t * 0.25, 0.0, 0.0)),
       snoise(position * 0.6 + vec3(0.0, t * 0.25, 0.0)),
@@ -158,7 +170,6 @@ const vertexShader = `
 
     vec3 finalPos = position + noiseVec * (0.12 * uTurbulence);
 
-    // Ligand Docking Particle Excitation
     if (uDockSurge > 0.01) {
       float ripple = sin(length(finalPos.xz) * 6.0 - uTime * 10.0);
       finalPos += normalize(finalPos) * ripple * (uDockSurge * 0.35);
@@ -167,7 +178,6 @@ const vertexShader = `
     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    // Size Attenuation with Camera Distance
     float pSize = (16.0 / -mvPosition.z) * (1.0 + uDockSurge * 0.5);
     gl_PointSize = clamp(pSize, 1.5, 42.0);
 
@@ -185,7 +195,6 @@ const fragmentShader = `
   varying float vAlpha;
 
   void main() {
-    // Soft circular biophoton particle falloff
     vec2 coord = gl_PointCoord - vec2(0.5);
     float dist = length(coord);
 
@@ -205,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initWaveformCanvas();
   renderCodonStrip();
+  initArchitectureInteractivity();
   animate();
 
   window.addEventListener('resize', onResize);
@@ -213,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initEngine() {
   const container = document.getElementById('canvas-stage');
+  if (!container) return;
   scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x05070c, 0.032);
 
@@ -235,14 +246,8 @@ function initEngine() {
     controls.enablePan = false;
   }
 
-  // Build GPU Particle DNA Structure
   buildParticleDNAHelix();
-  build3DDrugLigand();
 }
-
-/* ==========================================================================
-   48,000 GPU PARTICLE QUANTUM DNA DOUBLE HELIX
-   ========================================================================== */
 
 function buildParticleDNAHelix() {
   if (dnaParticleMesh) scene.remove(dnaParticleMesh);
@@ -264,7 +269,6 @@ function buildParticleDNAHelix() {
     let x, z;
     let c = new THREE.Color(0x00f0ff);
 
-    // 70% of particles form the dual helical strands
     if (i < particleCount * 0.7) {
       const strand = (i % 2 === 0) ? 0 : Math.PI;
       const strandRad = radius + (Math.random() - 0.5) * 0.18;
@@ -272,11 +276,9 @@ function buildParticleDNAHelix() {
       x = Math.cos(angle + strand) * strandRad;
       z = Math.sin(angle + strand) * strandRad;
 
-      if (strand === 0) c = new THREE.Color(0x00f0ff); // Strand 1: Spectral Cyan
-      else c = new THREE.Color(0x00e676);              // Strand 2: Emerald
-    }
-    // 20% form the bridging nucleotide rungs (A, T, G, C)
-    else if (i < particleCount * 0.9) {
+      if (strand === 0) c = new THREE.Color(0x00f0ff);
+      else c = new THREE.Color(0x00e676);
+    } else if (i < particleCount * 0.9) {
       const interp = Math.random();
       const rad1 = Math.cos(angle) * radius;
       const rad2 = Math.cos(angle + Math.PI) * radius;
@@ -293,9 +295,7 @@ function buildParticleDNAHelix() {
       else if (base === 'T') c = new THREE.Color(0xff2d55);
       else if (base === 'G') c = new THREE.Color(0x00e676);
       else c = new THREE.Color(0xffd600);
-    }
-    // 10% form ambient hydration solvent cloud
-    else {
+    } else {
       const solAngle = Math.random() * Math.PI * 2;
       const solR = radius + 0.4 + Math.random() * 1.2;
       x = Math.cos(solAngle) * solR;
@@ -333,48 +333,8 @@ function buildParticleDNAHelix() {
   });
 
   dnaParticleMesh = new THREE.Points(geo, dnaShaderMaterial);
-  dnaParticleMesh.position.set(1.4, 0, 0); // Positioned for editorial balance
+  dnaParticleMesh.position.set(1.4, 0, 0);
   scene.add(dnaParticleMesh);
-}
-
-/* ==========================================================================
-   3D MOLECULAR DRUG TABLET LIGAND
-   ========================================================================== */
-
-function build3DDrugLigand() {
-  drugLigandGroup = new THREE.Group();
-
-  // Central polyhedral small molecule core
-  const coreGeo = new THREE.IcosahedronGeometry(0.38, 2);
-  const coreMat = new THREE.MeshPhysicalMaterial({
-    color: 0x00f0ff,
-    emissive: 0x00808c,
-    emissiveIntensity: 1.2,
-    metalness: 0.5,
-    roughness: 0.15,
-    clearcoat: 1.0,
-    wireframe: true
-  });
-  const core = new THREE.Mesh(coreGeo, coreMat);
-  drugLigandGroup.add(core);
-
-  // Pharmacophore atomic sphere clusters
-  const atomMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8, roughness: 0.1 });
-  const offsets = [
-    new THREE.Vector3(0.4, 0.2, 0.0),
-    new THREE.Vector3(-0.4, -0.2, 0.0),
-    new THREE.Vector3(0.0, 0.4, 0.3),
-    new THREE.Vector3(0.0, -0.4, -0.3)
-  ];
-  offsets.forEach(pt => {
-    const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), atomMat);
-    s.position.copy(pt);
-    drugLigandGroup.add(s);
-  });
-
-  drugLigandGroup.position.set(3.8, 0.2, 1.2);
-  drugLigandGroup.visible = false;
-  dnaParticleMesh.add(drugLigandGroup);
 }
 
 /* ==========================================================================
@@ -389,8 +349,6 @@ function animate() {
 
   if (dnaShaderMaterial) {
     dnaShaderMaterial.uniforms.uTime.value = time;
-    
-    // Smooth decay of dock surge excitation
     const surge = dnaShaderMaterial.uniforms.uDockSurge.value;
     if (surge > 0.001) {
       dnaShaderMaterial.uniforms.uDockSurge.value = THREE.MathUtils.lerp(surge, 0.0, 0.05);
@@ -401,7 +359,6 @@ function animate() {
     dnaParticleMesh.rotation.y += delta * 0.25;
   }
 
-  // Camera Parallax Lerp
   targetCamX = mouseX * 0.35;
   targetCamY = mouseY * 0.35;
   if (dnaParticleMesh) {
@@ -410,10 +367,11 @@ function animate() {
   }
 
   if (controls) controls.update();
-  renderer.render(scene, camera);
+  if (renderer && scene && camera) renderer.render(scene, camera);
 }
 
 function onResize() {
+  if (!camera || !renderer) return;
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -425,57 +383,199 @@ function onMouseMove(e) {
 }
 
 /* ==========================================================================
-   DRUG TABLET SELECTION & DOCKING
+   SAMPLE QUERY EXECUTION & VERIFICATION ENGINE
    ========================================================================== */
 
-function dockTherapeutic(key) {
-  currentDrugKey = key;
-  const d = DRUG_DATA[key];
-  if (!d) return;
+function runSampleQuery(key, evt) {
+  currentQueryKey = key;
+  const q = QUERY_DATA[key];
+  if (!q) return;
 
-  playAcousticTone(580, 0.1);
+  playAcousticTone(640, 0.1);
 
-  document.querySelectorAll('.shelf-card').forEach(c => c.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if (evt && evt.currentTarget) {
+    document.querySelectorAll('.shelf-card').forEach(c => c.classList.remove('active'));
+    evt.currentTarget.classList.add('active');
+  }
 
-  // Update UI Elements
-  document.getElementById('energy-stat').innerHTML = `${d.energy} <span class="unit-text">kcal/mol</span>`;
-  document.getElementById('kd-display').textContent = d.kd;
-  document.getElementById('res-display').textContent = d.res;
+  // Update Telemetry Panel Numbers
+  const confElem = document.getElementById('confidence-stat');
+  if (confElem) confElem.innerHTML = `${parseFloat(q.confidence)}<span class="unit-text">%</span>`;
 
-  document.getElementById('drug-title').textContent = d.title;
-  document.getElementById('drug-desc').textContent = d.desc;
-  document.getElementById('spec-bio').textContent = d.bio;
-  document.getElementById('spec-pk').textContent = d.pk;
-  document.getElementById('spec-cl').textContent = d.cl;
+  const badgeElem = document.getElementById('agree-badge');
+  if (badgeElem) {
+    badgeElem.textContent = q.badge;
+    badgeElem.className = `panel-badge ${q.badgeClass}`;
+  }
 
-  triggerDockingAnimation();
+  document.getElementById('agree-display').textContent = q.agreePct;
+  document.getElementById('conflict-display').textContent = q.conflictPct;
+  document.getElementById('time-display').textContent = q.responseTime;
+
+  // Update Profile Card
+  document.getElementById('query-title').textContent = q.title;
+  document.getElementById('query-desc').textContent = q.desc;
+  document.getElementById('spec-pubmed').textContent = q.pubmed;
+  document.getElementById('spec-chembl').textContent = q.chembl;
+  document.getElementById('spec-drugbank').textContent = q.drugbank;
+
+  // Update Bottom Ticker
+  document.getElementById('ticker-query-text').textContent = q.ticker;
+  document.getElementById('ticker-agree-val').textContent = q.agreePct;
+
+  // Pulse 3D DNA Mesh
+  if (dnaShaderMaterial) {
+    dnaShaderMaterial.uniforms.uDockSurge.value = 1.0;
+  }
+
+  // Trigger 4-Trace Convergence Animation (§5.1)
+  triggerSourceCrossCheck();
 }
 
-function triggerDockingAnimation() {
+function triggerSourceCrossCheck() {
   playAcousticTone(880, 0.2);
-  if (!drugLigandGroup || !dnaShaderMaterial) return;
+  waveConvergenceProgress = 0.0;
+  
+  if (convergenceAnimId) cancelAnimationFrame(convergenceAnimId);
 
-  drugLigandGroup.visible = true;
-  dnaShaderMaterial.uniforms.uDockSurge.value = 1.0;
+  const startTime = Date.now();
+  const duration = 800; // 800ms per spec §5.1
 
-  document.getElementById('dock-badge').textContent = 'DOCKING IN PROGRESS...';
-  document.getElementById('dock-badge').style.color = '#ffd600';
+  function animateConvergence() {
+    const elapsed = Date.now() - startTime;
+    waveConvergenceProgress = Math.min(elapsed / duration, 1.0);
 
-  let t = 0;
-  const interval = setInterval(() => {
-    t += 0.04;
-    drugLigandGroup.position.x = THREE.MathUtils.lerp(3.8, 0.2, t);
-    drugLigandGroup.position.z = THREE.MathUtils.lerp(1.2, 0.7, t);
-    drugLigandGroup.rotation.y += 0.12;
-
-    if (t >= 1) {
-      clearInterval(interval);
-      document.getElementById('dock-badge').textContent = 'BOUND (Kd = 1.4 nM)';
-      document.getElementById('dock-badge').style.color = '#00e676';
-      playAcousticTone(1040, 0.25);
+    if (waveConvergenceProgress < 1.0) {
+      convergenceAnimId = requestAnimationFrame(animateConvergence);
     }
-  }, 25);
+  }
+  animateConvergence();
+}
+
+function reRunQuery() {
+  runSampleQuery(currentQueryKey);
+}
+
+function resetQueryState() {
+  runSampleQuery('metformin');
+}
+
+function toggleEvidenceView() {
+  const card = document.getElementById('query-profile-card');
+  if (card) {
+    card.classList.toggle('highlight-evidence');
+    playAcousticTone(520, 0.08);
+  }
+}
+
+/* ==========================================================================
+   2D SOURCE AGREEMENT SIGNAL WAVEFORM CANVAS (§5.1)
+   ========================================================================== */
+
+function initWaveformCanvas() {
+  waveCanvas = document.getElementById('waveform-canvas');
+  if (!waveCanvas) return;
+  waveCtx = waveCanvas.getContext('2d');
+
+  setInterval(drawMultiTraceWaveStep, 35);
+}
+
+function drawMultiTraceWaveStep() {
+  if (!waveCtx || !waveCanvas) return;
+  const w = waveCanvas.width;
+  const h = waveCanvas.height;
+  const midY = h / 2;
+
+  waveCtx.clearRect(0, 0, w, h);
+
+  const t = Date.now() / 1000;
+  const sources = [
+    { name: 'PubMed', color: '#00f0ff', offset: 0, amp: 16 },
+    { name: 'ChEMBL', color: '#00e676', offset: 1.2, amp: 14 },
+    { name: 'DrugBank', color: '#ffd600', offset: 2.4, amp: 18 },
+    { name: 'PubChem', color: '#a855f7', offset: 3.6, amp: 12 }
+  ];
+
+  // Draw 4 overlapping traces sweeping in from left and converging smoothly
+  sources.forEach((src, idx) => {
+    waveCtx.beginPath();
+    waveCtx.strokeStyle = src.color;
+    waveCtx.lineWidth = 1.6;
+    waveCtx.shadowBlur = 4;
+    waveCtx.shadowColor = src.color;
+
+    for (let x = 0; x < w; x += 3) {
+      // Convergence factor: x/w ratio + animation progress
+      const normX = x / w;
+      const spread = (1.0 - Math.pow(normX, 1.5)) * (1.0 - waveConvergenceProgress);
+      const phaseOffset = src.offset * spread;
+
+      const y = midY + Math.sin(t * 4.5 + x * 0.06 + phaseOffset) * (src.amp * (0.3 + spread * 0.7));
+
+      if (x === 0) waveCtx.moveTo(x, y);
+      else waveCtx.lineTo(x, y);
+    }
+    waveCtx.stroke();
+  });
+}
+
+/* ==========================================================================
+   ARCHITECTURE SECTION INTERACTIVITY (§5.2)
+   ========================================================================== */
+
+function initArchitectureInteractivity() {
+  // Ambient toggle between 3/3 Agree (Green) and Conflict Flagged (Amber) every 6s (§5.2)
+  const verifyState = document.getElementById('arch-verify-state');
+  const verifyText = document.getElementById('arch-verify-text');
+  let isAgreeState = true;
+
+  if (verifyState && verifyText) {
+    setInterval(() => {
+      isAgreeState = !isAgreeState;
+      if (isAgreeState) {
+        verifyText.textContent = '3/3 SOURCES AGREE (94.2%)';
+        verifyState.className = 'verifier-live-badge state-agree';
+      } else {
+        verifyText.textContent = 'SOURCE CONFLICT FLAGGED';
+        verifyState.className = 'verifier-live-badge state-conflict';
+      }
+    }, 6000);
+  }
+
+  // Scroll Observer for Architecture Nodes Sequential Glow
+  const archNodes = document.querySelectorAll('.arch-stage-node');
+  if ('IntersectionObserver' in window && archNodes.length > 0) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('node-active');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    archNodes.forEach(node => observer.observe(node));
+  }
+}
+
+function switchArchTab(tabType) {
+  const evView = document.getElementById('tab-evidence-view');
+  const sumView = document.getElementById('tab-summary-view');
+  const buttons = document.querySelectorAll('.out-tab');
+
+  if (!evView || !sumView) return;
+
+  buttons.forEach(b => b.classList.remove('active'));
+
+  if (tabType === 'evidence') {
+    evView.classList.remove('hidden');
+    sumView.classList.add('hidden');
+    if (buttons[0]) buttons[0].classList.add('active');
+  } else {
+    sumView.classList.remove('hidden');
+    evView.classList.add('hidden');
+    if (buttons[1]) buttons[1].classList.add('active');
+  }
+  playAcousticTone(720, 0.08);
 }
 
 /* ==========================================================================
@@ -517,83 +617,12 @@ function cycleBase(idx) {
   buildParticleDNAHelix();
 }
 
-function injectMutation() {
-  playAcousticTone(340, 0.15);
-  activeSequence[8] = 'T';
-  activeSequence[9] = 'A';
-  renderCodonStrip();
-  buildParticleDNAHelix();
-
-  document.getElementById('dock-badge').textContent = 'PATHOGENIC VARIANT DETECTED';
-  document.getElementById('dock-badge').style.color = '#ff2d55';
-  document.getElementById('energy-stat').innerHTML = '-8.4 <span class="unit-text">kcal/mol</span>';
-}
-
-function restoreWildtype() {
-  playAcousticTone(640, 0.1);
-  activeSequence = ['A', 'T', 'G', 'C', 'C', 'G', 'T', 'A', 'A', 'T', 'C', 'G', 'T', 'A', 'G', 'C', 'A', 'T', 'G', 'C', 'G', 'C', 'A', 'T'];
-  renderCodonStrip();
-  buildParticleDNAHelix();
-
-  document.getElementById('dock-badge').textContent = 'WILDTYPE RESTING';
-  document.getElementById('dock-badge').style.color = '#00e676';
-  document.getElementById('energy-stat').innerHTML = '-14.2 <span class="unit-text">kcal/mol</span>';
-}
-
-function toggleAutoOrbit() {
-  autoOrbit = !autoOrbit;
-  document.getElementById('orbit-btn').textContent = autoOrbit ? 'Pause Orbit' : 'Resume Orbit';
-}
-
-function resetPerspective() {
-  camera.position.set(0, 0.25, 8.6);
-  if (controls) controls.target.set(0, 0, 0);
-  if (dnaParticleMesh) dnaParticleMesh.rotation.set(0, 0, 0);
-}
-
 /* ==========================================================================
-   2D BINDING KINETICS WAVEFORM CANVAS
-   ========================================================================== */
-
-function initWaveformCanvas() {
-  waveCanvas = document.getElementById('waveform-canvas');
-  if (!waveCanvas) return;
-  waveCtx = waveCanvas.getContext('2d');
-  waveCtx.lineWidth = 1.8;
-
-  setInterval(drawWaveStep, 35);
-}
-
-function drawWaveStep() {
-  if (!waveCtx) return;
-  const w = waveCanvas.width;
-  const h = waveCanvas.height;
-  const midY = h / 2;
-
-  waveCtx.clearRect(waveX, 0, 8, h);
-
-  const t = Date.now() / 1000;
-  const y = midY + Math.sin(t * 4.5 + waveX * 0.08) * 16 * Math.cos(waveX * 0.035);
-
-  waveCtx.strokeStyle = '#00f0ff';
-  waveCtx.shadowBlur = 6;
-  waveCtx.shadowColor = '#00f0ff';
-
-  waveCtx.beginPath();
-  waveCtx.moveTo(waveX, lastWaveY);
-  waveCtx.lineTo(waveX + 2, y);
-  waveCtx.stroke();
-
-  lastWaveY = y;
-  waveX = (waveX + 2) % w;
-}
-
-/* ==========================================================================
-   ACOUSTIC SOUND SYNTHESIZER
+   AUDIO SYNTHESIZER & UTILS
    ========================================================================== */
 
 function playAcousticTone(freq, dur) {
-  if (!isAudioActive) return;
+  if (!isSessionActive) return;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioCtx.createOscillator();
@@ -611,9 +640,10 @@ function playAcousticTone(freq, dur) {
   } catch (e) {}
 }
 
-function toggleAudio() {
-  isAudioActive = !isAudioActive;
-  document.getElementById('sound-txt').textContent = isAudioActive ? 'AUDIO: ON' : 'AUDIO: MUTED';
+function toggleSessionState() {
+  isSessionActive = !isSessionActive;
+  const txt = document.getElementById('session-txt');
+  if (txt) txt.textContent = isSessionActive ? 'SESSION: LIVE' : 'SESSION: MUTED';
 }
 
 function initCursor() {
@@ -637,15 +667,18 @@ function initCursor() {
 }
 
 function openPortal() {
-  document.getElementById('portal-modal').classList.add('active');
+  const modal = document.getElementById('portal-modal');
+  if (modal) modal.classList.add('active');
 }
 
 function closePortal() {
-  document.getElementById('portal-modal').classList.remove('active');
+  const modal = document.getElementById('portal-modal');
+  if (modal) modal.classList.remove('active');
 }
 
 function handlePortalSubmit(e) {
   e.preventDefault();
-  alert('Clinical access inquiry received. Raw PDB/SDF coordinate keys dispatched to your institutional address.');
+  const queryVal = document.getElementById('console-query-input').value;
+  alert(`Parallel verification initiated for query:\n"${queryVal}"\n\nQuerying PubMed, ChEMBL, DrugBank, and PubChem simultaneously.`);
   closePortal();
 }
