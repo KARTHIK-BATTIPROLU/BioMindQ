@@ -5,6 +5,7 @@ import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.db.mongo import connect_to_mongo, close_mongo_connection
 from app.api.routes_query import router as query_router
 
@@ -41,11 +42,20 @@ app.add_middleware(
 
 app.include_router(query_router)
 
-# Mount static Chatbot UI at /chat
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static"))
+index_path = os.path.join(static_dir, "index.html")
+
+# Directly serve index.html at root / and /chat
+@app.get("/", include_in_schema=False)
+@app.get("/chat", include_in_schema=False)
+async def serve_chatbot_ui():
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "BioMindQ API is running. Chatbot UI index.html not found."}
+
 if os.path.exists(static_dir):
-    app.mount("/chat", StaticFiles(directory=static_dir, html=True), name="chat")
+    app.mount("/static", StaticFiles(directory=static_dir, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=3000, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=3001, reload=True)

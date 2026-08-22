@@ -19,7 +19,6 @@ let targetCamX = 0, targetCamY = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
   initEngine();
-  initCursor();
   animate();
 
   window.addEventListener('resize', onResize);
@@ -27,17 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll);
 
   // Touchpad & Mouse Wheel listener:
-  // Scrolling DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Enlarge BioMindQ
-  // Scrolling UP (deltaY < 0) -> Zoom OUT, Center DNA, Normal BioMindQ
+  // Scroll DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Enlarge BioMindQ
+  // Scroll UP (deltaY < 0) -> Zoom OUT, Center DNA, Normal BioMindQ
   window.addEventListener('wheel', (e) => {
     if (e.deltaY > 0) {
-      targetScrollProgress = Math.min(1, targetScrollProgress + 0.12);
+      targetScrollProgress = Math.min(1, targetScrollProgress + 0.15);
     } else if (e.deltaY < 0) {
-      targetScrollProgress = Math.max(0, targetScrollProgress - 0.12);
+      targetScrollProgress = Math.max(0, targetScrollProgress - 0.15);
     }
   }, { passive: true });
 
-  // Start at top of page (Picture 1: smaller & centered)
+  // Page starts at top of page (scrollY = 0: smaller & centered)
   window.scrollTo(0, 0);
   onScroll();
 });
@@ -179,8 +178,8 @@ function build3DDNAHelix() {
 function onScroll() {
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll > 0) {
-    // Scrolling DOWN (scrollY increases -> progress = 1, Zoom IN, shift to right)
-    // Scrolling UP (scrollY = 0 -> progress = 0, Zoom OUT, center)
+    // Scrolling DOWN (scrollY increases -> progress = 1, Zoom IN & Shift to Right)
+    // Scrolling UP (scrollY = 0 -> progress = 0, Zoom OUT & Center)
     targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
   }
 }
@@ -194,12 +193,12 @@ function animate() {
   currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
 
   if (dnaGroup) {
-    // Transition position.x: centered (0.0) -> right side (1.8) when scrolling DOWN
-    const targetX = window.innerWidth < 768 ? 0.6 : 1.8;
+    // Transition position.x: centered (0.0) -> far right side (2.5) when scrolling DOWN
+    const targetX = window.innerWidth < 768 ? 0.8 : 2.5;
     dnaGroup.position.x = THREE.MathUtils.lerp(0.0, targetX, currentScrollProgress);
     
-    // Transition scale: smaller (0.65) -> zoomed in (1.3) when scrolling DOWN
-    const scale = THREE.MathUtils.lerp(0.65, 1.3, currentScrollProgress);
+    // Transition scale: smaller (0.65) -> dramatically zoomed in (1.95) when scrolling DOWN
+    const scale = THREE.MathUtils.lerp(0.65, 1.95, currentScrollProgress);
     dnaGroup.scale.set(scale, scale, scale);
 
     // Continuous 3D rotation around Y axis
@@ -242,24 +241,4 @@ function onResize() {
 function onMouseMove(e) {
   mouseX = (e.clientX / window.innerWidth) * 2 - 1;
   mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-}
-
-function initCursor() {
-  const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  let cx = 0, cy = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => {
-    cx = e.clientX;
-    cy = e.clientY;
-    if (dot) dot.style.transform = `translate(${cx}px, ${cy}px)`;
-  });
-
-  function updateRing() {
-    rx += (cx - rx) * 0.15;
-    ry += (cy - ry) * 0.15;
-    if (ring) ring.style.transform = `translate(${rx}px, ${ry}px)`;
-    requestAnimationFrame(updateRing);
-  }
-  updateRing();
 }
