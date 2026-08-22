@@ -194,80 +194,107 @@ async def seed_demo_data():
         from app.memory.graph import upsert_session_graph
         from app.memory.vector_store import embed_and_upsert_session
 
-        demo_email = "demo@biomindq.ai"
-        existing = await mongo_manager.db["users"].find_one({"email": demo_email})
-        if existing:
-            user_id = str(existing["_id"])
-        else:
+        demo_emails = ["demo@biomindq.ai", "researcher@biomindq.ai"]
+
+        for demo_email in demo_emails:
+            existing = await mongo_manager.db["users"].find_one({"email": demo_email})
+            if existing:
+                user_id = str(existing["_id"])
+            else:
+                now = datetime.now(timezone.utc)
+                res = await mongo_manager.db["users"].insert_one({
+                    "email": demo_email,
+                    "password_hash": hash_password("password123"),
+                    "created_at": now,
+                    "plan": "researcher"
+                })
+                user_id = str(res.inserted_id)
+
+            s_count = await mongo_manager.db["sessions"].count_documents({"user_id": user_id})
+            if s_count > 0:
+                continue
+
             now = datetime.now(timezone.utc)
-            res = await mongo_manager.db["users"].insert_one({
-                "email": demo_email,
-                "password_hash": hash_password("password123"),
-                "created_at": now,
-                "plan": "researcher"
-            })
-            user_id = str(res.inserted_id)
-
-        # Check if sessions already seeded
-        s_count = await mongo_manager.db["sessions"].count_documents({"user_id": user_id})
-        if s_count > 0:
-            return
-
-        now = datetime.now(timezone.utc)
-        mock_sessions = [
-            {
-                "user_id": user_id,
-                "created_at": now,
-                "query_text": "What is known about metformin's interaction with AMPK?",
-                "topics": ["metformin", "ampk", "gluconeogenesis", "insulin sensitivity"],
-                "answer_payload": {
-                    "final_answer": {
-                        "confidence_score": 90,
-                        "ai_summary": "Metformin's principal downstream target is the energy-sensing kinase AMPK. The drug inhibits mitochondrial complex I, leading to an increased AMP/ATP ratio that activates AMPK."
-                    },
-                    "consensus": {"confidence_score": 90, "label": "Strong Consensus", "supports": 3, "contradicts": 0, "total_sources": 3}
+            mock_sessions = [
+                {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": "What is known about metformin's interaction with AMPK?",
+                    "topics": ["metformin", "ampk", "gluconeogenesis", "insulin sensitivity"],
+                    "answer_payload": {
+                        "final_answer": {
+                            "confidence_score": 92,
+                            "ai_summary": "Metformin's principal downstream target is the energy-sensing kinase AMPK. The drug inhibits mitochondrial complex I, leading to an increased AMP/ATP ratio that allosterically activates AMPK."
+                        },
+                        "consensus": {"confidence_score": 92, "label": "Strong Consensus", "supports": 4, "contradicts": 0, "total_sources": 4}
+                    }
+                },
+                {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": "How does GLP-1 activation synergize with metformin in type 2 diabetes?",
+                    "topics": ["metformin", "glp-1", "semaglutide", "t2d", "insulin sensitivity"],
+                    "answer_payload": {
+                        "final_answer": {
+                            "confidence_score": 95,
+                            "ai_summary": "GLP-1 receptor agonists and metformin show synergistic metabolic benefits: GLP-1 enhances pancreatic insulin secretion while metformin lowers hepatic glucose output via AMPK activation."
+                        },
+                        "consensus": {"confidence_score": 95, "label": "Strong Consensus", "supports": 5, "contradicts": 0, "total_sources": 5}
+                    }
+                },
+                {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": "Does ibuprofen interact with lisinopril and reduce antihypertensive efficacy?",
+                    "topics": ["ibuprofen", "lisinopril", "blood pressure", "renal clearance"],
+                    "answer_payload": {
+                        "final_answer": {
+                            "confidence_score": 88,
+                            "ai_summary": "NSAIDs like ibuprofen inhibit renal prostaglandin synthesis, which can blunt the vasodilator effect of ACE inhibitors such as lisinopril and cause blood pressure elevation."
+                        },
+                        "consensus": {"confidence_score": 88, "label": "Strong Consensus", "supports": 4, "contradicts": 0, "total_sources": 4}
+                    }
+                },
+                {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": "What are the renal clearance risks of combining NSAIDs like ibuprofen with ACE inhibitors?",
+                    "topics": ["ibuprofen", "lisinopril", "renal clearance", "nephrotoxicity"],
+                    "answer_payload": {
+                        "final_answer": {
+                            "confidence_score": 90,
+                            "ai_summary": "Concomitant use of NSAIDs and ACE inhibitors ('double whammy') impairs renal hemodynamics, significantly decreasing glomerular filtration rate and elevating acute kidney failure risk."
+                        },
+                        "consensus": {"confidence_score": 90, "label": "Strong Consensus", "supports": 4, "contradicts": 0, "total_sources": 4}
+                    }
+                },
+                {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": "Summarize recent clinical findings on GLP-1 receptor agonists and cardiovascular outcomes.",
+                    "topics": ["glp-1", "semaglutide", "cardiovascular safety", "liraglutide"],
+                    "answer_payload": {
+                        "final_answer": {
+                            "confidence_score": 94,
+                            "ai_summary": "Major cardiovascular outcome trials (CVOTs) demonstrate that GLP-1 agonists like semaglutide significantly reduce major adverse cardiovascular events (MACE) in type 2 diabetes patients."
+                        },
+                        "consensus": {"confidence_score": 94, "label": "Strong Consensus", "supports": 6, "contradicts": 0, "total_sources": 6}
+                    }
                 }
-            },
-            {
-                "user_id": user_id,
-                "created_at": now,
-                "query_text": "Does ibuprofen interact with lisinopril?",
-                "topics": ["ibuprofen", "lisinopril", "blood pressure", "renal clearance"],
-                "answer_payload": {
-                    "final_answer": {
-                        "confidence_score": 85,
-                        "ai_summary": "NSAIDs like ibuprofen can attenuate the antihypertensive efficacy of ACE inhibitors such as lisinopril and elevate renal toxicity risks."
-                    },
-                    "consensus": {"confidence_score": 85, "label": "Strong Consensus", "supports": 4, "contradicts": 0, "total_sources": 4}
-                }
-            },
-            {
-                "user_id": user_id,
-                "created_at": now,
-                "query_text": "Summarize recent findings on GLP-1 receptor agonists.",
-                "topics": ["glp-1", "semaglutide", "liraglutide", "t2d"],
-                "answer_payload": {
-                    "final_answer": {
-                        "confidence_score": 92,
-                        "ai_summary": "GLP-1 receptor agonists stimulate glucose-dependent insulin secretion, suppress glucagon output, delay gastric emptying, and promote satiety."
-                    },
-                    "consensus": {"confidence_score": 92, "label": "Strong Consensus", "supports": 5, "contradicts": 0, "total_sources": 5}
-                }
-            }
-        ]
+            ]
 
-        for sess in mock_sessions:
-            res = await mongo_manager.db["sessions"].insert_one(sess)
-            s_id = str(res.inserted_id)
+            for sess in mock_sessions:
+                res = await mongo_manager.db["sessions"].insert_one(sess)
+                s_id = str(res.inserted_id)
 
-            # Upsert into Knowledge Graph
-            await upsert_session_graph(user_id, s_id, sess["query_text"], sess["topics"])
+                # Upsert into Knowledge Graph
+                await upsert_session_graph(user_id, s_id, sess["query_text"], sess["topics"])
 
-            # Upsert into Vector Store
-            summary = sess["answer_payload"]["final_answer"]["ai_summary"]
-            await embed_and_upsert_session(user_id, s_id, sess["query_text"], summary, sess["topics"])
+                # Upsert into Vector Store
+                summary = sess["answer_payload"]["final_answer"]["ai_summary"]
+                await embed_and_upsert_session(user_id, s_id, sess["query_text"], summary, sess["topics"])
 
-        logger.info(f"Seeded demo researcher '{demo_email}' with 3 mock sessions, knowledge graph nodes, and vector embeddings.")
+            logger.info(f"Seeded researcher '{demo_email}' with 5 interconnected mock sessions, knowledge graph nodes, and vector embeddings.")
 
     except Exception as e:
         logger.error(f"Failed to seed demo data: {e}")
