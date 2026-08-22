@@ -69,6 +69,7 @@ body.light-theme {
   height: 100vh;
   z-index: 1;
   pointer-events: all;
+  will-change: filter, opacity;
 }
 
 /* ==========================================================================

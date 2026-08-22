@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll);
 
   // Touchpad & Mouse Wheel listener:
-  // Scroll DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Enlarge BioMindQ
-  // Scroll UP (deltaY < 0) -> Zoom OUT, Center DNA, Normal BioMindQ
+  // Scroll DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Blur DNA background
+  // Scroll UP (deltaY < 0) -> Zoom OUT, Center DNA, Unblur DNA
   window.addEventListener('wheel', (e) => {
     if (e.deltaY > 0) {
       targetScrollProgress = Math.min(1, targetScrollProgress + 0.2);
@@ -220,6 +220,15 @@ function animate() {
     targetCamY = mouseY * 0.35;
     dnaGroup.rotation.x = THREE.MathUtils.lerp(dnaGroup.rotation.x, targetCamY * 0.15, 0.05);
     dnaGroup.rotation.z = THREE.MathUtils.lerp(dnaGroup.rotation.z, targetCamX * 0.1, 0.05);
+  }
+
+  // Smoothly blur background canvas as DNA shifts to the right side
+  const canvasStage = document.getElementById('canvas-stage');
+  if (canvasStage) {
+    const blurPx = THREE.MathUtils.lerp(0, 10, currentScrollProgress);
+    const canvasOpacity = THREE.MathUtils.lerp(1.0, 0.55, currentScrollProgress);
+    canvasStage.style.filter = `blur(${blurPx}px)`;
+    canvasStage.style.opacity = canvasOpacity;
   }
 
   // BioMindQ Title: Enlarge smoothly when scrolling DOWN
