@@ -1,0 +1,25 @@
+{
+  "name": "genomix-3d-ai",
+  "version": "1.0.0",
+  "description": "Award-Winning Interactive 3D Medical & Quantum Genomics Landing Page",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "python3 -m http.server 3000",
+    "build": "echo 'Ready for static deployment'"
+  },
+  "keywords": [
+    "threejs",
+    "webgl",
+    "medical",
+    "3d",
+    "dna",
+    "crispr",
+    "brain",
+    "genomics",
+    "landing-page",
+    "awwwards"
+  ],
+  "author": "Antigravity AI",
+  "license": "MIT"
+}
