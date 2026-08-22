@@ -26,22 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mousemove', onMouseMove);
   window.addEventListener('scroll', onScroll);
 
-  // Touchpad & Mouse Wheel listener for direct UP / DOWN scroll gestures
+  // Touchpad & Mouse Wheel listener:
+  // Scrolling DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Enlarge BioMindQ
+  // Scrolling UP (deltaY < 0) -> Zoom OUT, Center DNA, Normal BioMindQ
   window.addEventListener('wheel', (e) => {
-    if (e.deltaY < 0) {
-      // Scroll UP -> Zoom IN, Shift to Right, Enlarge BioMindQ
+    if (e.deltaY > 0) {
       targetScrollProgress = Math.min(1, targetScrollProgress + 0.12);
-    } else if (e.deltaY > 0) {
-      // Scroll DOWN -> Zoom OUT, Center DNA, Normal BioMindQ
+    } else if (e.deltaY < 0) {
       targetScrollProgress = Math.max(0, targetScrollProgress - 0.12);
     }
   }, { passive: true });
 
-  // Start at bottom so scrolling UP immediately triggers zoom in & right shift
-  setTimeout(() => {
-    window.scrollTo(0, document.documentElement.scrollHeight);
-    onScroll();
-  }, 50);
+  // Start at top of page (Picture 1: smaller & centered)
+  window.scrollTo(0, 0);
+  onScroll();
 });
 
 function initEngine() {
@@ -181,9 +179,9 @@ function build3DDNAHelix() {
 function onScroll() {
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll > 0) {
-    // Scrolling UP (towards top, scrollY = 0) -> progress = 1 (Zoom IN, shift to right)
-    // Scrolling DOWN (towards bottom, scrollY = max) -> progress = 0 (Zoom OUT, center)
-    targetScrollProgress = 1 - Math.min(1, Math.max(0, window.scrollY / maxScroll));
+    // Scrolling DOWN (scrollY increases -> progress = 1, Zoom IN, shift to right)
+    // Scrolling UP (scrollY = 0 -> progress = 0, Zoom OUT, center)
+    targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
   }
 }
 
@@ -196,11 +194,11 @@ function animate() {
   currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
 
   if (dnaGroup) {
-    // Transition position.x: centered (0.0) -> right side (1.8) when scrolling UP
+    // Transition position.x: centered (0.0) -> right side (1.8) when scrolling DOWN
     const targetX = window.innerWidth < 768 ? 0.6 : 1.8;
     dnaGroup.position.x = THREE.MathUtils.lerp(0.0, targetX, currentScrollProgress);
     
-    // Transition scale: smaller (0.65) -> zoomed in (1.3) when scrolling UP
+    // Transition scale: smaller (0.65) -> zoomed in (1.3) when scrolling DOWN
     const scale = THREE.MathUtils.lerp(0.65, 1.3, currentScrollProgress);
     dnaGroup.scale.set(scale, scale, scale);
 
@@ -216,7 +214,7 @@ function animate() {
     dnaGroup.rotation.z = THREE.MathUtils.lerp(dnaGroup.rotation.z, targetCamX * 0.1, 0.05);
   }
 
-  // BioMindQ Title: Enlarge and fade into bold prominence when scrolling UP
+  // BioMindQ Title: Enlarge and fade into bold prominence when scrolling DOWN
   const brandTitle = document.getElementById('brand-title');
   const brandKicker = document.getElementById('brand-kicker');
   if (brandTitle) {

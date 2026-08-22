@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioMindQ // Live Research Intelligence Chatbot Tester</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(15, 23, 42, 0.82);
+      --bg-surface: #1e293b;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --border-dark: rgba(51, 65, 85, 0.6);
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      border-bottom: 1px solid var(--border-dark);
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      font-size: 1.1rem;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .brand-pill {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid var(--border-cyan);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+    }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .presets-row {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .btn-preset {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-dark);
+      color: var(--text-sub);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-preset:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .msg-box {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--border-cyan);
+      padding: 1rem 1.25rem;
+      border-radius: 12px 12px 2px 12px;
+      max-width: 80%;
+      font-size: 0.95rem;
+    }
+
+    .bot-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-meta-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      border-bottom: 1px solid var(--border-dark);
+      padding-bottom: 0.75rem;
+    }
+
+    .conf-badge {
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.15);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .latency-tag {
+      color: var(--text-sub);
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .evidence-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .ev-source {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+    }
+
+    .ev-claim {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .ev-link {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    .ev-link:hover { text-decoration: underline; }
+
+    .ai-summary-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #e2e8f0;
+    }
+
+    .disclaimer-strip {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      text-align: center;
+      padding: 0.6rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 6px;
+      border: 1px dashed var(--border-dark);
+    }
+
+    /* Input Floating Dock */
+    .input-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-dark);
+      padding: 1rem 2rem;
+      z-index: 100;
+    }
+
+    .input-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .input-field {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 0.85rem 1.15rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .btn-send {
+      background: var(--accent-cyan);
+      color: #090d16;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      padding: 0 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-send:hover {
+      background: #22d3ee;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(6, 182, 212, 0.3);
+      border-top-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span>BIOMINDQ</span>
+      <span class="brand-pill">RESEARCH INTELLIGENCE CHATBOT</span>
+    </div>
+    <div class="status-badge">
+      <span class="pulse"></span>
+      <span>BACKEND: HTTP://LOCALHOST:3000</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Sample Presets -->
+    <div class="presets-row">
+      <button class="btn-preset" onclick="askPreset('What is known about metformin\'s interaction with AMPK?')">
+        🧪 Metformin ↔ AMPK
+      </button>
+      <button class="btn-preset" onclick="askPreset('Does ibuprofen interact with lisinopril?')">
+        ⚠️ Ibuprofen ↔ Lisinopril
+      </button>
+      <button class="btn-preset" onclick="askPreset('Summarize recent findings on GLP-1 receptor agonists.')">
+        🧬 GLP-1 Literature Scan
+      </button>
+      <button class="btn-preset" onclick="askPreset('What compounds are being studied for early-stage Alzheimer\'s?')">
+        🧠 Alzheimer's Compounds
+      </button>
+    </div>
+
+    <!-- Chat Messages Container -->
+    <div class="chat-container" id="chat-flow">
+      <!-- Initial Welcome Card -->
+      <div class="bot-card">
+        <div class="card-meta-bar">
+          <span class="conf-badge">BIOMINDQ ENGINE READY</span>
+          <span class="latency-tag">Connected to PubMed, ChEMBL, PubChem, DrugBank</span>
+        </div>
+        <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6;">
+          Welcome to the <strong>BioMindQ Research Intelligence Tester</strong>. Type a biomedical question or pick a sample prompt above to query live databases, cross-verify findings, and view structured evidence alongside AI summaries.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Input Dock -->
+  <div class="input-dock">
+    <div class="input-wrapper">
+      <input type="text" id="user-input" class="input-field" placeholder="Ask a biomedical research question (e.g., Metformin mechanism, drug interactions)..." onkeydown="handleKeyDown(event)">
+      <button class="btn-send" id="send-btn" onclick="submitQuery()">
+        <span>Query Engine</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const API_ENDPOINT = '/api/query';
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter') submitQuery();
+    }
+
+    function askPreset(txt) {
+      document.getElementById('user-input').value = txt;
+      submitQuery();
+    }
+
+    async function submitQuery() {
+      const input = document.getElementById('user-input');
+      const question = input.value.trim();
+      if (!question) return;
+
+      const chatFlow = document.getElementById('chat-flow');
+
+      // User Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'user-msg';
+      userBubble.textContent = question;
+      chatFlow.appendChild(userBubble);
+
+      input.value = '';
+
+      // Bot Loading Card
+      const loadingCard = document.createElement('div');
+      loadingCard.className = 'bot-card';
+      loadingCard.innerHTML = `
+        <div class="card-meta-bar">
+          <span class="conf-badge"><span class="loading-spinner"></span> SEARCHING BIOMEDICAL DATABASES...</span>
+          <span class="latency-tag">Executing Planner & Concurrent Retrieval</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #94a3b8; font-family: var(--font-mono);">
+          Querying PubMed (NCBI), ChEMBL REST, PubChem PUG, and DrugBank... Cross-verifying evidence.
+        </p>
+      `;
+      chatFlow.appendChild(loadingCard);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+      try {
+        const resp = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await resp.json();
+        chatFlow.removeChild(loadingCard);
+
+        if (!resp.ok) {
+          throw new Error(data.detail || 'API Request Failed');
+        }
+
+        renderResponseCard(data);
+
+      } catch (err) {
+        if (loadingCard.parentNode) chatFlow.removeChild(loadingCard);
+        
+        const errCard = document.createElement('div');
+        errCard.className = 'bot-card';
+        errCard.style.borderColor = 'var(--accent-rose)';
+        errCard.innerHTML = `
+          <div class="card-meta-bar" style="color: var(--accent-rose);">
+            <span>ERROR EXECUTING QUERY</span>
+          </div>
+          <p style="font-size: 0.9rem; color: #fca5a5;">${err.message}</p>
+        `;
+        chatFlow.appendChild(errCard);
+      }
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function renderResponseCard(data) {
+      const chatFlow = document.getElementById('chat-flow');
+      const final = data.final_answer || {};
+      const verifier = data.verifier_output || {};
+      const evidenceList = final.retrieved_evidence || [];
+
+      const card = document.createElement('div');
+      card.className = 'bot-card';
+
+      let evidenceHTML = '';
+      if (evidenceList.length > 0) {
+        evidenceHTML = evidenceList.map(item => `
+          <div class="evidence-card">
+            <span class="ev-source">${item.source || 'DATABASE'}</span>
+            <div class="ev-claim">${item.claim || ''}</div>
+            ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="ev-link">View Source Document &rarr;</a>` : ''}
+          </div>
+        `).join('');
+      } else {
+        evidenceHTML = `<div style="font-family: var(--font-mono); font-size: 0.8rem; color: #94a3b8;">No direct database claims retrieved for this query.</div>`;
+      }
+
+      let agreementsHTML = (verifier.agreements || []).map(a => `<li style="margin-left: 1.2rem;">${a}</li>`).join('');
+      let conflictsHTML = (verifier.conflicts || []).map(c => `<li style="margin-left: 1.2rem; color: #fcd34d;">${c}</li>`).join('');
+
+      card.innerHTML = `
+        <div class="card-meta-bar">
+          <span class="conf-badge">${final.confidence_score || 0}% CONFIDENCE SCORE</span>
+          <span class="latency-tag">Total Pipeline Latency: ${data.latency_ms || 0} ms</span>
+        </div>
+
+        ${verifier.agreements && verifier.agreements.length > 0 ? `
+          <div>
+            <div class="section-title">Verified Agreements</div>
+            <ul style="font-size: 0.85rem; color: #34d399; line-height: 1.6;">${agreementsHTML}</ul>
+          </div>
+        ` : ''}
+
+        ${verifier.conflicts && verifier.conflicts.length > 0 ? `
+          <div>
+            <div class="section-title" style="color: var(--accent-amber);">Conflict / Safety Flags</div>
+            <ul style="font-size: 0.85rem; line-height: 1.6;">${conflictsHTML}</ul>
+          </div>
+        ` : ''}
+
+        <div>
+          <div class="section-title">Retrieved Evidence (${evidenceList.length} Items)</div>
+          <div class="evidence-grid">${evidenceHTML}</div>
+        </div>
+
+        <div>
+          <div class="section-title">AI Summary Synthesis</div>
+          <div class="ai-summary-box">${final.ai_summary || 'No summary generated.'}</div>
+        </div>
+
+        <div class="disclaimer-strip">
+          🛡️ ${final.disclaimer || 'Research and informational tool only — not intended for diagnosis or treatment.'}
+        </div>
+      `;
+
+      chatFlow.appendChild(card);
+    }
+  </script>
+</body>
+</html>
