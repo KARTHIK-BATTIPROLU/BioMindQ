@@ -42,10 +42,10 @@ async def generate_final_answer(
             {
                 "id": item.get("id"),
                 "title": item.get("title"),
-                "summary": str(item.get("summary", ""))[:200],
+                "summary": str(item.get("summary", ""))[:150],
                 "url": item.get("url")
             }
-            for item in items[:4]
+            for item in items[:3]
         ]
 
     user_prompt = f"""Question: "{question}"
@@ -59,7 +59,7 @@ Retrieved Evidence Items:
 
     try:
         answer_dict = await call_groq_structured(
-            model="groq/compound",
+            model="openai/gpt-oss-120b",
             system_prompt=ANSWER_GENERATOR_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             response_schema=FinalAnswer,
