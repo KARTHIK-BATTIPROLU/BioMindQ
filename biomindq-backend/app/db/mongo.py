@@ -14,10 +14,20 @@ mongo_manager = MongoDBManager()
 async def connect_to_mongo():
     try:
         if settings.MONGODB_URI:
-            mongo_manager.client = AsyncIOMotorClient(
-                settings.MONGODB_URI,
-                serverSelectionTimeoutMS=2000
-            )
+            try:
+                import certifi
+                ca_file = certifi.where()
+                mongo_manager.client = AsyncIOMotorClient(
+                    settings.MONGODB_URI,
+                    tlsCAFile=ca_file,
+                    serverSelectionTimeoutMS=3000
+                )
+            except Exception:
+                mongo_manager.client = AsyncIOMotorClient(
+                    settings.MONGODB_URI,
+                    serverSelectionTimeoutMS=3000
+                )
+                
             mongo_manager.db = mongo_manager.client[settings.MONGODB_DB_NAME]
             # Quick ping test
             await mongo_manager.client.admin.command('ping')

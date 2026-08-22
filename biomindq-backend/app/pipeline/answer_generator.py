@@ -1,4 +1,5 @@
 import logging
+import json
 from typing import Dict, Any, List
 from app.config import settings
 from app.models.schemas import FinalAnswer
@@ -12,16 +13,16 @@ ANSWER_GENERATOR_SYSTEM_PROMPT = f"""You are the master BioMindQ answer generato
 Your job is to produce a final response for a user's biomedical question, strictly separating RETRIEVED EVIDENCE from AI SUMMARY.
 
 Strict Rules:
-1. "retrieved_evidence": Must be an array of objects `{{"claim": "...", "source": "...", "url": "..."}}`. Every claim MUST be directly traceable to one of the provided database search results. Include exact URLs provided in source items.
-2. "ai_summary": Your high-level synthesis explaining the answer in clear scientific language. Do NOT blend unsourced claims into retrieved_evidence.
+1. "retrieved_evidence": Array of objects `{{"claim": "...", "source": "...", "url": "..."}}`. Every claim MUST be directly traceable to one of the provided database search results. Include exact URLs.
+2. "ai_summary": Your high-level synthesis explaining the answer in clear scientific language.
 3. "confidence_score": Integer 0 to 100 based on verifier evaluation.
 4. "disclaimer": Must always be exactly "{FIXED_DISCLAIMER}".
 
-Return JSON schema matching:
+Respond strictly in valid JSON format matching:
 {{
   "retrieved_evidence": [{{"claim": "string", "source": "string", "url": "string"}}],
   "ai_summary": "string",
-  "confidence_score": int (0-100),
+  "confidence_score": int,
   "disclaimer": "{FIXED_DISCLAIMER}"
 }}
 """
@@ -35,24 +36,35 @@ async def generate_final_answer(
         logger.info("GROQ_API_KEY not configured; using fallback answer generator.")
         return generate_fallback_answer(question, raw_results, verifier_output)
 
+    compact_data = {}
+    for src, items in raw_results.items():
+        compact_data[src] = [
+            {
+                "id": item.get("id"),
+                "title": item.get("title"),
+                "summary": str(item.get("summary", ""))[:200],
+                "url": item.get("url")
+            }
+            for item in items[:4]
+        ]
+
     user_prompt = f"""Question: "{question}"
 
 Verifier Evaluation:
-{verifier_output}
+{json.dumps(verifier_output, indent=2)}
 
-Raw Retrieved Evidence Items by Source:
-{raw_results}
+Retrieved Evidence Items:
+{json.dumps(compact_data, indent=2)}
 """
 
     try:
         answer_dict = await call_groq_structured(
-            model="llama-3.3-70b-versatile",
+            model="groq/compound",
             system_prompt=ANSWER_GENERATOR_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             response_schema=FinalAnswer,
             temperature=0.2
         )
-        # Ensure fixed disclaimer is strictly set
         answer_dict["disclaimer"] = FIXED_DISCLAIMER
         return answer_dict
     except Exception as e:

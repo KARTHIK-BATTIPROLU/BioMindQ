@@ -1,5 +1,5 @@
 /**
- * 3D DNA HELIX ROTATION & SCROLL ZOOM ENGINE
+ * BIOMINDQ // 3D DNA HELIX ROTATION & TOUCHPAD / MOUSE PAD SCROLL ENGINE
  */
 
 let scene, camera, renderer, controls;
@@ -25,7 +25,23 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', onResize);
   document.addEventListener('mousemove', onMouseMove);
   window.addEventListener('scroll', onScroll);
-  onScroll();
+
+  // Touchpad & Mouse Wheel listener for direct UP / DOWN scroll gestures
+  window.addEventListener('wheel', (e) => {
+    if (e.deltaY < 0) {
+      // Scroll UP -> Zoom IN, Shift to Right, Enlarge BioMindQ
+      targetScrollProgress = Math.min(1, targetScrollProgress + 0.12);
+    } else if (e.deltaY > 0) {
+      // Scroll DOWN -> Zoom OUT, Center DNA, Normal BioMindQ
+      targetScrollProgress = Math.max(0, targetScrollProgress - 0.12);
+    }
+  }, { passive: true });
+
+  // Start at bottom so scrolling UP immediately triggers zoom in & right shift
+  setTimeout(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    onScroll();
+  }, 50);
 });
 
 function initEngine() {
@@ -165,7 +181,9 @@ function build3DDNAHelix() {
 function onScroll() {
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll > 0) {
-    targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+    // Scrolling UP (towards top, scrollY = 0) -> progress = 1 (Zoom IN, shift to right)
+    // Scrolling DOWN (towards bottom, scrollY = max) -> progress = 0 (Zoom OUT, center)
+    targetScrollProgress = 1 - Math.min(1, Math.max(0, window.scrollY / maxScroll));
   }
 }
 
@@ -178,12 +196,12 @@ function animate() {
   currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
 
   if (dnaGroup) {
-    // Transition position.x: centered (0.0) -> right side (1.8)
+    // Transition position.x: centered (0.0) -> right side (1.8) when scrolling UP
     const targetX = window.innerWidth < 768 ? 0.6 : 1.8;
     dnaGroup.position.x = THREE.MathUtils.lerp(0.0, targetX, currentScrollProgress);
     
-    // Transition scale: smaller (0.65) -> zoomed in (1.25)
-    const scale = THREE.MathUtils.lerp(0.65, 1.25, currentScrollProgress);
+    // Transition scale: smaller (0.65) -> zoomed in (1.3) when scrolling UP
+    const scale = THREE.MathUtils.lerp(0.65, 1.3, currentScrollProgress);
     dnaGroup.scale.set(scale, scale, scale);
 
     // Continuous 3D rotation around Y axis
@@ -196,6 +214,20 @@ function animate() {
     targetCamY = mouseY * 0.35;
     dnaGroup.rotation.x = THREE.MathUtils.lerp(dnaGroup.rotation.x, targetCamY * 0.15, 0.05);
     dnaGroup.rotation.z = THREE.MathUtils.lerp(dnaGroup.rotation.z, targetCamX * 0.1, 0.05);
+  }
+
+  // BioMindQ Title: Enlarge and fade into bold prominence when scrolling UP
+  const brandTitle = document.getElementById('brand-title');
+  const brandKicker = document.getElementById('brand-kicker');
+  if (brandTitle) {
+    const titleScale = THREE.MathUtils.lerp(1.0, 1.85, currentScrollProgress);
+    const titleOpacity = THREE.MathUtils.lerp(0.7, 1.0, currentScrollProgress);
+    brandTitle.style.transform = `scale(${titleScale})`;
+    brandTitle.style.opacity = titleOpacity;
+  }
+  if (brandKicker) {
+    const kickerScale = THREE.MathUtils.lerp(1.0, 1.2, currentScrollProgress);
+    brandKicker.style.transform = `scale(${kickerScale})`;
   }
 
   if (controls) controls.update();

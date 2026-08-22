@@ -1,10 +1,13 @@
 /* ==========================================================================
-   3D DNA ROTATION & SCROLL ZOOM ANIMATION STYLES
+   BIOMINDQ // LANDING PAGE STYLES & HIDE SCROLLBAR
    ========================================================================== */
 
 :root {
   --bg-light: #f8fafc;
   --accent-blue: #2563eb;
+  --text-dark: #0f172a;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 *, *::before, *::after {
@@ -13,21 +16,31 @@
   padding: 0;
 }
 
-html {
+/* Hide scrollbar completely across all browsers */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   scroll-behavior: smooth;
   background-color: var(--bg-light);
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
 body.light-theme {
   width: 100%;
-  min-height: 250vh;
+  min-height: 300vh;
   overflow-x: hidden;
   background-color: var(--bg-light);
   -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================================================
-   3D WEBGL VIEWPORT CANVAS
+   3D WEBGL VIEWPORT CANVAS STAGE
    ========================================================================== */
 
 .canvas-stage {
@@ -41,8 +54,45 @@ body.light-theme {
 }
 
 .scroll-container {
-  height: 250vh;
+  height: 300vh;
   pointer-events: none;
+}
+
+/* ==========================================================================
+   LEFT SIDE BRANDING (BIOMINDQ)
+   ========================================================================== */
+
+.brand-hero-left {
+  position: fixed;
+  left: 8vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  user-select: none;
+}
+
+.brand-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--accent-blue);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.brand-title {
+  font-size: 4.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--text-dark);
+  line-height: 1.0;
+  transform-origin: left center;
+  will-change: transform, opacity;
 }
 
 /* ==========================================================================

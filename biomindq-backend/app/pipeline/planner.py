@@ -19,10 +19,15 @@ Rules:
 - Only include sources in "sources" that are relevant to the question.
 - Always provide "per_source_query" entries for selected sources.
 - If the question is completely out-of-scope or non-biomedical, return empty sources list [].
+
+Respond strictly in valid JSON format matching:
+{
+  "sources": ["string"],
+  "per_source_query": {"source_name": "query_string"}
+}
 """
 
 async def plan_query(question: str) -> Dict[str, Any]:
-    # Fallback heuristic planner if GROQ_API_KEY is not set or API fails
     if not settings.GROQ_API_KEY:
         logger.info("GROQ_API_KEY not configured; using rule-based fallback planner.")
         return generate_fallback_plan(question)
@@ -31,7 +36,7 @@ async def plan_query(question: str) -> Dict[str, Any]:
 
     try:
         plan_dict = await call_groq_structured(
-            model="llama-3.1-8b-instant",
+            model="groq/compound-mini",
             system_prompt=PLANNER_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             response_schema=PlannerOutput,
@@ -47,7 +52,6 @@ def generate_fallback_plan(question: str) -> Dict[str, Any]:
     sources: List[str] = []
     per_source_query: Dict[str, str] = {}
 
-    # Basic keyword matching for fallback
     words = [w.strip("?,.!") for w in q_lower.split()]
     main_terms = [w for w in words if len(w) > 3 and w not in ["what", "does", "with", "from", "about", "have", "this", "that", "how"]]
     query_str = " ".join(main_terms[:3]) if main_terms else question

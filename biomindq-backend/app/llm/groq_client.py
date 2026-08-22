@@ -1,8 +1,7 @@
 import logging
 import json
-from typing import Optional, Dict, Any, Type
+from typing import Optional, Dict, Any, Type, List
 from pydantic import BaseModel
-import httpx
 from groq import AsyncGroq
 from app.config import settings
 
@@ -25,7 +24,6 @@ async def check_groq_health() -> str:
     try:
         if not groq_manager.client:
             init_groq_client()
-        # Test call with tiny completion or models list
         if groq_manager.client:
             await groq_manager.client.models.list()
             return "ok"
@@ -47,26 +45,42 @@ async def call_groq_structured(
     if not groq_manager.client:
         raise ValueError("GROQ_API_KEY is not configured in environment.")
 
-    json_schema = response_schema.model_json_schema()
+    # Ensure system prompt explicitly contains the word 'json' for Groq response_format requirements
+    formatted_system_prompt = system_prompt
+    if "json" not in formatted_system_prompt.lower():
+        formatted_system_prompt += "\nRespond strictly in valid JSON format."
 
-    response = await groq_manager.client.chat.completions.create(
-        model=model,
-        messages=[
-          {"role": "system", "content": system_prompt},
-          {"role": "user", "content": user_prompt}
-        ],
-        response_format={
-          "type": "json_object"
-        },
-        temperature=temperature
-    )
+    # Candidate models to try in sequence if a model ID is unavailable or errors
+    candidate_models: List[str] = [model]
+    if "8b" in model.lower() or "instant" in model.lower():
+        candidate_models.extend(["groq/compound-mini", "qwen/qwen3.6-27b", "allam-2-7b"])
+    else:
+        candidate_models.extend(["groq/compound", "openai/gpt-oss-120b", "groq/compound-mini"])
 
-    content = response.choices[0].message.content
-    try:
-        data = json.loads(content)
-        # Validate against schema
-        validated = response_schema.model_validate(data)
-        return validated.model_dump()
-    except Exception as e:
-        logger.error(f"Failed to parse structured LLM output: {e}. Raw content: {content}")
-        raise RuntimeError(f"Structured output validation failed: {e}")
+    candidate_models = list(dict.fromkeys(candidate_models))
+
+    last_exception = None
+
+    for m in candidate_models:
+        try:
+            response = await groq_manager.client.chat.completions.create(
+                model=m,
+                messages=[
+                    {"role": "system", "content": formatted_system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                response_format={"type": "json_object"},
+                temperature=temperature
+            )
+
+            content = response.choices[0].message.content
+            data = json.loads(content)
+            validated = response_schema.model_validate(data)
+            logger.info(f"Groq structured LLM call succeeded using model '{m}'.")
+            return validated.model_dump()
+
+        except Exception as e:
+            last_exception = e
+            logger.warning(f"Groq call with model '{m}' encountered error: {e}. Trying next candidate model...")
+
+    raise RuntimeError(f"All candidate Groq models failed. Last error: {last_exception}")

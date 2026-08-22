@@ -11,16 +11,16 @@ VERIFIER_SYSTEM_PROMPT = """You are an expert biomedical verification agent.
 Your job is to cross-examine retrieved evidence items from multiple databases (PubMed, ChEMBL, PubChem, DrugBank) and evaluate their agreement, entity resolution, and potential conflicts.
 
 Instructions:
-1. Entity Linking: Identify whether results from different sources refer to the same real-world entity (compound, drug, target gene, disease), even if named differently (e.g. "metformin" vs "CID_4091" vs "CHEMBL1431").
+1. Entity Linking: Identify whether results from different sources refer to the same real-world entity (compound, drug, target gene, disease), even if named differently.
 2. Dynamic Reasoning: Examine the claims. Reason about what findings support each other (Agreements) and what findings contradict or raise safety/efficacy concerns (Conflicts).
-3. Confidence Score: Assign an integer confidence score from 0 to 100 based on source agreement level and data reliability. (High agreement = 85-100, conflicts/single source = 0-60).
+3. Confidence Score: Assign an integer confidence score from 0 to 100 based on source agreement level and data reliability.
 
-Return JSON schema matching:
+Respond strictly in valid JSON format matching:
 {
   "entities_linked": [{"entity": "string", "sources": ["string"]}],
   "agreements": ["string"],
   "conflicts": ["string"],
-  "confidence": int (0-100)
+  "confidence": int
 }
 """
 
@@ -29,11 +29,23 @@ async def verify_evidence(question: str, raw_results: Dict[str, List[Dict[str, A
         logger.info("GROQ_API_KEY not configured; using fallback verifier.")
         return generate_fallback_verification(question, raw_results)
 
-    user_prompt = f"Question: \"{question}\"\n\nRetrieved Source Data:\n{json.dumps(raw_results, indent=2)}"
+    compact_data = {}
+    for src, items in raw_results.items():
+        compact_data[src] = [
+            {
+                "id": item.get("id"),
+                "title": item.get("title"),
+                "summary": str(item.get("summary", ""))[:200],
+                "url": item.get("url")
+            }
+            for item in items[:4]
+        ]
+
+    user_prompt = f"Question: \"{question}\"\n\nRetrieved Evidence Items:\n{json.dumps(compact_data, indent=2)}"
 
     try:
         verifier_dict = await call_groq_structured(
-            model="llama-3.1-8b-instant",
+            model="groq/compound-mini",
             system_prompt=VERIFIER_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             response_schema=VerifierOutput,
@@ -46,7 +58,6 @@ async def verify_evidence(question: str, raw_results: Dict[str, List[Dict[str, A
 
 def generate_fallback_verification(question: str, raw_results: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
     active_sources = [src for src, items in raw_results.items() if len(items) > 0]
-    total_items = sum(len(items) for items in raw_results.values())
 
     agreements = []
     conflicts = []
