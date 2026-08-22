@@ -77,35 +77,22 @@ body.light-theme {
 
 .hero-section {
   position: relative;
-  min-height: 100vh;
+  min-height: 75vh;
   display: flex;
   align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 2rem;
   z-index: 10;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .brand-hero-left {
-  position: fixed;
-  left: 8vw;
-  top: 48%;
-  transform: translateY(-50%);
+  position: relative;
+  max-width: 560px;
   z-index: 10;
-  pointer-events: auto;
   font-family: var(--font-sans);
-  max-width: 580px;
   user-select: none;
-}
-
-.brand-kicker {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  color: var(--accent-blue);
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  transform-origin: left center;
-  will-change: transform;
 }
 
 .brand-title {
@@ -127,7 +114,7 @@ body.light-theme {
 }
 
 .hero-cta-wrapper {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .btn-primary-hero {
@@ -156,13 +143,12 @@ body.light-theme {
 .landing-content {
   position: relative;
   z-index: 10;
-  margin-top: 100vh; /* Pushes content below the viewport hero */
   padding-bottom: 4rem;
   pointer-events: auto;
 }
 
 .section-container {
-  padding: 5rem 1.5rem;
+  padding: 4rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -366,6 +352,7 @@ body.light-theme {
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
   width: fit-content;
+}
 
 .badge-green {
   background: var(--accent-emerald-light);
@@ -837,8 +824,6 @@ body.light-theme {
 
 @media (max-width: 768px) {
   .brand-hero-left {
-    left: 5vw;
-    right: 5vw;
     max-width: 100%;
   }
 
