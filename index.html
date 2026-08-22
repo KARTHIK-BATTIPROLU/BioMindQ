@@ -6,26 +6,23 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>BIOMINDQ // Multi-Source Biomedical Evidence Verification Layer</title>
-  <meta name="description" content="Cross-checks every answer against PubMed, ChEMBL, DrugBank, and PubChem before it reaches you — and tells you exactly what's retrieved evidence versus AI-generated summary.">
+  <title>PROTERA // Structure-Based DNA Pharmacogenomics</title>
+  <meta name="description" content="Engineering orally bioavailable small-molecule tablets and antisense oligonucleotides that selectively intercalate into aberrant genomic loci with sub-nanomolar binding affinity.">
   
   <!-- Premium Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=4.0.0">
+  <link rel="stylesheet" href="styles.css?v=5.0.0">
 
   <!-- Three.js Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
-<body>
+<body class="light-theme">
 
-  <!-- Filmic Grain Texture Overlay -->
-  <div class="noise-texture"></div>
-
-  <!-- Fullscreen 3D WebGL Canvas Layer (DNA Particle Background) -->
+  <!-- Fullscreen 3D WebGL Canvas Layer -->
   <div id="canvas-stage" class="canvas-stage"></div>
 
   <!-- Custom Pointer -->
@@ -35,26 +32,26 @@
   <!-- Main UI Shell -->
   <div class="app-layout">
 
-    <!-- Top Navigation -->
+    <!-- Top Navigation Header -->
     <header class="top-nav">
       <div class="nav-wrapper">
         <a href="#" class="brand-entity">
           <span class="brand-point"></span>
-          <span class="brand-name">BIOMINDQ <span class="brand-pill">RESEARCH INTELLIGENCE</span></span>
+          <span class="brand-name">PROTERA <span class="brand-pill">DNA PHARMACOLOGY</span></span>
         </a>
 
         <div class="nav-center-ticker">
           <span class="pulse-dot"></span>
-          <span class="ticker-text">4 SOURCES CONNECTED // CROSS-VERIFICATION ONLINE</span>
+          <span class="ticker-text">CRYO-EM 1.82 Å // SUB-ANGSTROM LIGAND DOCKING</span>
         </div>
 
         <div class="nav-meta">
-          <button class="btn-sound" id="session-btn" onclick="toggleSessionState()">
-            <span class="sound-wave"><span></span><span></span><span></span></span>
-            <span id="session-txt">SESSION: LIVE</span>
+          <button class="btn-sound" id="sound-btn" onclick="toggleAudio()">
+            <span class="sound-icon">🔊</span>
+            <span id="sound-txt">AUDIO: ON</span>
           </button>
           <button class="btn-primary" onclick="openPortal()">
-            <span>Launch Research Console &rarr;</span>
+            <span>Clinical Pipeline Access &rarr;</span>
           </button>
         </div>
       </div>
@@ -64,159 +61,131 @@
     <main class="hero-viewport">
       <div class="hero-grid">
         
-        <!-- Left Column: Editorial & Interactive Query Selector -->
+        <!-- Left Column: Editorial & Therapeutic Candidate Cards -->
         <div class="hero-left-content">
           
           <div class="kicker-pill">
             <span class="kicker-index">01.0</span>
             <span class="kicker-divider">/</span>
-            <span class="kicker-label">MULTI-SOURCE BIOMEDICAL VERIFICATION</span>
+            <span class="kicker-label">STRUCTURE-BASED DNA PHARMACOGENOMICS</span>
           </div>
 
           <h1 class="hero-heading">
-            Answers you can verify. <br>
-            <span class="text-glow">Not just AI that sounds right.</span>
+            Programmable<br>
+            <span class="text-blue">DNA Therapeutics.</span>
           </h1>
 
           <p class="hero-summary">
-            BioMindQ cross-checks every answer against PubMed, ChEMBL, DrugBank, and PubChem before it reaches you — and tells you exactly what's retrieved evidence versus AI-generated summary.
+            Engineering orally bioavailable small-molecule tablets and antisense oligonucleotides that selectively intercalate into aberrant genomic loci with sub-nanomolar binding affinity.
           </p>
 
-          <div class="hero-cta-group">
-            <button class="btn-primary btn-hero-cta" onclick="openPortal()">
-              <span>Launch Research Console &rarr;</span>
-            </button>
-            <a href="#section-architecture" class="btn-ghost-cta">
-              <span>See how verification works &darr;</span>
-            </a>
-          </div>
-
-          <!-- Interactive Sample Query Cards Shelf -->
+          <!-- Therapeutic Selector Shelf -->
           <div class="drug-shelf">
-            <div class="shelf-label">SELECT A SAMPLE QUERY TO RUN</div>
+            <div class="shelf-header-row">
+              <span class="shelf-label">SELECT THERAPEUTIC CANDIDATE (CLICK TO DOCK)</span>
+              <span class="shelf-hint">Rotate 3D Helix • Click & Drag</span>
+            </div>
+            
             <div class="shelf-grid">
               
-              <button class="shelf-card active" onclick="runSampleQuery('metformin', event)">
+              <button class="shelf-card active" onclick="dockTherapeutic('elexacaftor', event)">
                 <div class="card-meta-top">
-                  <span class="card-tag tag-cyan">COMPOUND LOOKUP</span>
-                  <span class="card-kd">ChEMBL · DrugBank</span>
+                  <span class="card-tag tag-blue">ORAL TABLET</span>
+                  <span class="card-kd">Kd = 1.4 nM</span>
                 </div>
-                <div class="card-drug-title">What is known about metformin's interaction with AMPK?</div>
-                <div class="card-target">Sources: ChEMBL · DrugBank</div>
+                <div class="card-drug-title">Elexacaftor-01</div>
+                <div class="card-target">CFTR &Delta;F508 Exon 10 &bull; 84.6% Oral Bioavailability</div>
               </button>
 
-              <button class="shelf-card" onclick="runSampleQuery('alzheimers', event)">
+              <button class="shelf-card" onclick="dockTherapeutic('nusinersen', event)">
                 <div class="card-meta-top">
-                  <span class="card-tag tag-emerald">DISEASE OVERVIEW</span>
-                  <span class="card-kd">PubMed · ChEMBL</span>
+                  <span class="card-tag tag-emerald">ANTISENSE OLIGO</span>
+                  <span class="card-kd">Kd = 0.8 nM</span>
                 </div>
-                <div class="card-drug-title">What compounds are being studied for early-stage Alzheimer's?</div>
-                <div class="card-target">Sources: PubMed · ChEMBL</div>
+                <div class="card-drug-title">Nusinersen-X</div>
+                <div class="card-target">SMN2 Splice-Switching Modulator &bull; t1/2: 135d</div>
               </button>
 
-              <button class="shelf-card" onclick="runSampleQuery('ibuprofen', event)">
+              <button class="shelf-card" onclick="dockTherapeutic('exacel', event)">
                 <div class="card-meta-top">
-                  <span class="card-tag tag-rose">INTERACTION CHECK</span>
-                  <span class="card-kd">DrugBank · PubMed</span>
+                  <span class="card-tag tag-purple">CRISPR PRIME</span>
+                  <span class="card-kd">99.98% Fidelity</span>
                 </div>
-                <div class="card-drug-title">Does ibuprofen interact with lisinopril?</div>
-                <div class="card-target">Sources: DrugBank · PubMed</div>
+                <div class="card-drug-title">Exa-cel Prime</div>
+                <div class="card-target">BCL11A Enhancer Editor &bull; Lipid Nanoparticle</div>
               </button>
 
-              <button class="shelf-card" onclick="runSampleQuery('glp1', event)">
+              <button class="shelf-card" onclick="dockTherapeutic('patisiran', event)">
                 <div class="card-meta-top">
-                  <span class="card-tag tag-gold">LITERATURE SCAN</span>
-                  <span class="card-kd">PubMed · ChEMBL</span>
+                  <span class="card-tag tag-gold">LIPID RNAi</span>
+                  <span class="card-kd">t1/2 = 4.8 hr</span>
                 </div>
-                <div class="card-drug-title">Summarize recent findings on GLP-1 receptor agonists.</div>
-                <div class="card-target">Sources: PubMed · ChEMBL</div>
+                <div class="card-drug-title">Patisiran-RNAi</div>
+                <div class="card-target">Transthyretin Silencer &bull; 85nm Lipid Carrier</div>
               </button>
 
             </div>
           </div>
 
-          <!-- Interactive Sequence Track Control Bar -->
-          <div class="seq-editor-box">
-            <div class="seq-box-head">
-              <span class="seq-title">GENOMIC SENSE STRAND // 5' &rarr; 3' // LIVE SEQUENCE</span>
-              <span class="seq-gc">GC CONTENT: <strong id="gc-val">58.3%</strong></span>
+          <!-- Bottom Telemetry Metric Bar -->
+          <div class="hero-telemetry-bar">
+            <div class="t-cell">
+              <span class="t-label">GIBBS FREE ENERGY (&Delta;G)</span>
+              <span class="t-val text-blue" id="stat-energy">-14.2 kcal/mol</span>
             </div>
-
-            <div class="codons-strip" id="codons-strip">
-              <!-- Rendered via app.js -->
+            <div class="t-cell">
+              <span class="t-label">DISSOCIATION CONSTANT</span>
+              <span class="t-val text-emerald" id="stat-kd">Kd = 1.4 nM</span>
             </div>
-
-            <div class="seq-action-row">
-              <button class="btn-action-ghost" onclick="openPortal()">
-                🔍 ASK Question
-              </button>
-              <button class="btn-action-ghost" onclick="triggerSourceCrossCheck()">
-                ⚡ COMPARE Sources
-              </button>
-              <button class="btn-action-ghost" onclick="reRunQuery()">
-                ↺ RE-RUN Query
-              </button>
-              <button class="btn-action-ghost" onclick="resetQueryState()">
-                ↺ RESET
-              </button>
-              <button class="btn-action-ghost" onclick="toggleEvidenceView()">
-                👁 TOGGLE EVIDENCE VIEW
-              </button>
+            <div class="t-cell">
+              <span class="t-label">RESIDENCE TIME</span>
+              <span class="t-val text-dark" id="stat-res">t1/2 = 4.8 hr</span>
+            </div>
+            <div class="t-cell">
+              <span class="t-label">CONFORMATION</span>
+              <span class="t-val text-emerald" id="stat-conf">BOUND (CFTR Exon 10)</span>
             </div>
           </div>
 
         </div>
 
-        <!-- Right Column: Real-Time Telemetry & Active Query Panel -->
+        <!-- Right Column: Interactive Docking Controls & 3D Canvas Viewport -->
         <div class="hero-right-content">
           
-          <div class="telemetry-panel">
-            <div class="panel-head">
-              <div>
-                <span class="panel-mono-tag">CONFIDENCE SCORE</span>
-                <div class="panel-stat-hero" id="confidence-stat">94.2<span class="unit-text">%</span></div>
-              </div>
-              <div class="panel-badge badge-green" id="agree-badge">3/3 SOURCES AGREE</div>
+          <!-- Top Right Controls Card -->
+          <div class="dock-control-card">
+            <div class="codon-box-head">
+              <span class="codon-title">CODON SENSE STRAND // 5' &rarr; 3'</span>
+              <span class="codon-gc">GC: <strong id="gc-val">50.0%</strong></span>
             </div>
 
-            <!-- Dynamic Source-Agreement Signal Canvas (4-Trace Convergence) -->
-            <div class="waveform-container">
-              <div class="wave-legend">
-                <span class="w-leg leg-cyan"><i class="dot"></i> PubMed</span>
-                <span class="w-leg leg-emerald"><i class="dot"></i> ChEMBL</span>
-                <span class="w-leg leg-gold"><i class="dot"></i> DrugBank</span>
-                <span class="w-leg leg-purple"><i class="dot"></i> PubChem</span>
-              </div>
-              <canvas id="waveform-canvas" width="360" height="90"></canvas>
+            <!-- Nucleotide Codons Strip -->
+            <div class="codons-strip" id="codons-strip">
+              <!-- Rendered via JavaScript -->
             </div>
 
-            <div class="panel-metrics-grid">
-              <div class="p-metric">
-                <span class="p-lbl">SOURCE AGREEMENT</span>
-                <span class="p-val text-cyan" id="agree-display">94.2%</span>
-              </div>
-              <div class="p-metric">
-                <span class="p-lbl">CONFLICT RATE</span>
-                <span class="p-val text-emerald" id="conflict-display">0.0%</span>
-              </div>
-              <div class="p-metric">
-                <span class="p-lbl">RESPONSE TIME</span>
-                <span class="p-val text-gold" id="time-display">4.1s</span>
-              </div>
+            <div class="dock-action-stack">
+              <button class="btn-dock-primary" onclick="triggerDockingAnimation()">
+                🧪 Dock Selected Drug Ligand
+              </button>
+              <button class="btn-dock-outline" onclick="injectMutation()">
+                ⚡ Inject Pathogenic Variant
+              </button>
+              <button class="btn-dock-outline" onclick="restoreWildtype()">
+                ↺ Restore Wildtype Reference
+              </button>
             </div>
           </div>
 
-          <!-- Active Query Profile Panel -->
-          <div class="formulation-panel" id="query-profile-card">
-            <div class="form-tag">ACTIVE QUERY PROFILE</div>
-            <div class="form-title" id="query-title">Metformin ↔ AMPK Interaction</div>
-            <p class="form-description" id="query-desc">
-              Retrieved evidence indicates metformin activates AMPK indirectly via mitochondrial complex I inhibition. Confirmed independently across ChEMBL bioactivity records and 3 PubMed abstracts. No conflicting evidence found.
-            </p>
-            <div class="form-specs">
-              <div><span class="spec-label">PUBMED</span><strong id="spec-pubmed">3 Abstracts Verified</strong></div>
-              <div><span class="spec-label">ChEMBL</span><strong id="spec-chembl">IC50 = 12.4 &mu;M</strong></div>
-              <div><span class="spec-label">DRUGBANK</span><strong id="spec-drugbank">Target DB00331</strong></div>
+          <!-- Bottom Right Viewport Controls Card -->
+          <div class="viewport-controls-card">
+            <div class="vp-hint">
+              <span class="vp-icon">🖱️</span>
+              <span><strong>Click & Drag</strong> to orbit 360&deg; &bull; <strong>Scroll</strong> to zoom</span>
+            </div>
+            <div class="vp-buttons">
+              <button class="btn-vp" id="orbit-btn" onclick="toggleAutoOrbit()">Pause Orbit</button>
+              <button class="btn-vp" onclick="resetPerspective()">Reset Perspective</button>
             </div>
           </div>
 
@@ -225,391 +194,44 @@
       </div>
     </main>
 
-    <!-- Bottom Ticker Bar -->
-    <div class="bottom-ticker-bar">
-      <div class="ticker-left">
-        <span class="ticker-pulse"></span>
-        <span class="mono-bold">LIVE QUERY LOG:</span>
-        <span id="ticker-query-text">CROSS-MATCHING PUBMED · ChEMBL · DRUGBANK · PUBCHEM</span>
-      </div>
-      <div class="ticker-right">
-        <span class="mono-label">AGREEMENT:</span>
-        <strong id="ticker-agree-val" class="text-cyan">94.2%</strong>
-      </div>
-    </div>
-
-    <!-- Section 02: Problem Statement -->
-    <section class="content-block block-problem" id="section-problem">
-      <div class="block-container">
-        
-        <div class="kicker-pill">
-          <span class="kicker-index">02.0</span>
-          <span class="kicker-divider">/</span>
-          <span class="kicker-label">WHY THIS MATTERS</span>
-        </div>
-
-        <div class="problem-quote-box">
-          <div class="quote-mark">&ldquo;</div>
-          <h2 class="problem-quote-text">
-            A wrong answer from a casual chatbot is annoying. <br>
-            <span class="text-glow-rose">A wrong answer about a drug interaction is dangerous.</span>
-          </h2>
-
-          <p class="problem-subtext">
-            General-purpose AI tools generate fluent, confident-sounding text — with no guarantee it's grounded in real data. In biomedical research, that gap between <em>sounds right</em> and <em>is right</em> costs time, money, and in the worst case, safety.
-          </p>
-
-          <div class="problem-stat-callout">
-            <div class="stat-badge-large">MANUAL CROSS-CHECKING</div>
-            <p class="stat-callout-text">
-              Researchers today manually cross-reference literature across multiple databases because no single tool is trusted enough to work from alone.
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Section 03: Solution Section -->
-    <section class="content-block block-solution" id="section-solution">
-      <div class="block-container">
-        
-        <div class="block-header text-center">
-          <div class="kicker-pill centered">
-            <span class="kicker-index">03.0</span>
-            <span class="kicker-divider">/</span>
-            <span class="kicker-label">HOW WE SOLVE IT</span>
-          </div>
-          <h2 class="block-title">We didn't build another chatbot. We built a verification layer.</h2>
-        </div>
-
-        <div class="solution-grid-4">
-          <div class="sol-card">
-            <div class="sol-icon text-cyan">⚡</div>
-            <h3 class="sol-title">Parallel retrieval</h3>
-            <p class="sol-copy">Every question queries all relevant sources at once, not one at a time.</p>
-          </div>
-          <div class="sol-card">
-            <div class="sol-icon text-emerald">🛡️</div>
-            <h3 class="sol-title">Cross-verification</h3>
-            <p class="sol-copy">An answer is only marked confident when independent sources agree.</p>
-          </div>
-          <div class="sol-card">
-            <div class="sol-icon text-purple">🏷️</div>
-            <h3 class="sol-title">Labeled output</h3>
-            <p class="sol-copy">Retrieved evidence and AI-generated summary are visually separated, never blended.</p>
-          </div>
-          <div class="sol-card">
-            <div class="sol-icon text-gold">⚠️</div>
-            <h3 class="sol-title">Visible uncertainty</h3>
-            <p class="sol-copy">Conflicting or incomplete data is flagged, never silently smoothed over.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Section 04: System Architecture (Interactive Sequence Diagram) -->
-    <section class="content-block block-architecture" id="section-architecture">
-      <div class="block-container">
-        
-        <div class="block-header">
-          <div class="kicker-pill">
-            <span class="kicker-index">04.0</span>
-            <span class="kicker-divider">/</span>
-            <span class="kicker-label">SYSTEM ARCHITECTURE</span>
-          </div>
-          <h2 class="block-title">From question to verified answer, in four steps.</h2>
-        </div>
-
-        <!-- 4-Stage Animated Architecture Glass Diagram -->
-        <div class="architecture-flow-container" id="arch-flow">
-          
-          <!-- Stage 1 -->
-          <div class="arch-stage-node arch-node-1" data-step="1">
-            <div class="node-header">
-              <span class="node-num">01</span>
-              <span class="node-tag">INPUT</span>
-            </div>
-            <h3 class="node-title">Ask</h3>
-            <p class="node-copy">You ask a question in plain language. No special syntax required.</p>
-            <div class="node-visual-mini">
-              <code>"Does ibuprofen interact with lisinopril?"</code>
-            </div>
-          </div>
-
-          <div class="arch-connector"><div class="connector-line"></div></div>
-
-          <!-- Stage 2 -->
-          <div class="arch-stage-node arch-node-2" data-step="2">
-            <div class="node-header">
-              <span class="node-num">02</span>
-              <span class="node-tag">PLAN & ROUTE</span>
-            </div>
-            <h3 class="node-title">Plan & Retrieve</h3>
-            <p class="node-copy">The system determines which sources are relevant and queries all of them simultaneously.</p>
-            
-            <div class="parallel-sources-grid">
-              <div class="p-subnode pulse-cyan"><span class="dot"></span><span>PubMed</span></div>
-              <div class="p-subnode pulse-emerald"><span class="dot"></span><span>ChEMBL</span></div>
-              <div class="p-subnode pulse-gold"><span class="dot"></span><span>DrugBank</span></div>
-              <div class="p-subnode pulse-purple"><span class="dot"></span><span>PubChem</span></div>
-            </div>
-          </div>
-
-          <div class="arch-connector"><div class="connector-line"></div></div>
-
-          <!-- Stage 3 -->
-          <div class="arch-stage-node arch-node-3" data-step="3">
-            <div class="node-header">
-              <span class="node-num">03</span>
-              <span class="node-tag">CROSS-CHECK</span>
-            </div>
-            <h3 class="node-title">Cross-Verify</h3>
-            <p class="node-copy">Results are compared against each other. Facts confirmed by multiple independent sources are marked high-confidence.</p>
-            
-            <div class="verifier-live-badge" id="arch-verify-state">
-              <span class="v-indicator state-agree"></span>
-              <span id="arch-verify-text">3/3 SOURCES AGREE (94.2%)</span>
-            </div>
-          </div>
-
-          <div class="arch-connector"><div class="connector-line"></div></div>
-
-          <!-- Stage 4 -->
-          <div class="arch-stage-node arch-node-4" data-step="4">
-            <div class="node-header">
-              <span class="node-num">04</span>
-              <span class="node-tag">OUTPUT</span>
-            </div>
-            <h3 class="node-title">Answer, Labeled</h3>
-            <p class="node-copy">You receive a response with two clearly separated parts: retrieved evidence and AI-generated summary.</p>
-            
-            <div class="labeled-output-card">
-              <div class="output-tabs">
-                <button class="out-tab active" onclick="switchArchTab('evidence')">RETRIEVED EVIDENCE</button>
-                <button class="out-tab" onclick="switchArchTab('summary')">AI SUMMARY</button>
-              </div>
-              <div class="output-tab-content" id="arch-tab-box">
-                <div class="evidence-content" id="tab-evidence-view">
-                  <span class="cite-pill">ChEMBL bioactivity IC50=12.4&mu;M</span>
-                  <span class="cite-pill">DrugBank DB00331 Interaction</span>
-                  <span class="cite-pill">PubMed PMID: 34182910</span>
-                </div>
-                <div class="summary-content hidden" id="tab-summary-view">
-                  <p>Metformin activates AMPK via complex I inhibition. Grounded across 3 independent database records.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="architecture-footnote-strip">
-          <code>RESEARCH TOOL ONLY — NOT FOR DIAGNOSIS OR TREATMENT</code>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Section 05: Data Sources -->
-    <section class="content-block block-sources" id="section-sources">
-      <div class="block-container">
-        
-        <div class="block-header text-center">
-          <div class="kicker-pill centered">
-            <span class="kicker-index">05.0</span>
-            <span class="kicker-divider">/</span>
-            <span class="kicker-label">DATA SOURCES</span>
-          </div>
-          <h2 class="block-title">Not a new database. A verification layer on the ones researchers already trust.</h2>
-        </div>
-
-        <div class="sources-grid-4">
-          <div class="source-card">
-            <div class="src-meta-top"><span class="card-tag tag-cyan">LITERATURE</span></div>
-            <h3 class="src-title">PubMed</h3>
-            <p class="src-desc">30M+ biomedical abstracts, NIH/NCBI</p>
-          </div>
-          <div class="source-card">
-            <div class="src-meta-top"><span class="card-tag tag-emerald">BIOACTIVITY</span></div>
-            <h3 class="src-title">ChEMBL</h3>
-            <p class="src-desc">Curated bioactivity data from pharmacology literature</p>
-          </div>
-          <div class="source-card">
-            <div class="src-meta-top"><span class="card-tag tag-gold">INTERACTIONS</span></div>
-            <h3 class="src-title">DrugBank</h3>
-            <p class="src-desc">Drug mechanisms, dosages, interaction data</p>
-          </div>
-          <div class="source-card">
-            <div class="src-meta-top"><span class="card-tag tag-purple">CHEMISTRY</span></div>
-            <h3 class="src-title">PubChem</h3>
-            <p class="src-desc">Chemical structures and compound properties</p>
-          </div>
-        </div>
-
-        <div class="sources-credibility-note">
-          <p>
-            Built on the same retrieval-augmented, multi-agent pattern validated in peer-reviewed drug-discovery research (CLADD, 2025) — applied here as a focused, transparent verification layer rather than a closed black box.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Section 06: Audience -->
-    <section class="content-block block-audience" id="section-audience">
-      <div class="block-container">
-        
-        <div class="block-header text-center">
-          <div class="kicker-pill centered">
-            <span class="kicker-index">06.0</span>
-            <span class="kicker-divider">/</span>
-            <span class="kicker-label">AUDIENCE</span>
-          </div>
-          <h2 class="block-title">Built for people who already know what to look for.</h2>
-          <p class="block-lead max-w-700">
-            BioMindQ is a professional research tool for biomedical researchers, pharmacologists, and early-stage drug discovery teams — not a consumer health app. It's designed to save an expert time, not explain basics to a layperson.
-          </p>
-        </div>
-
-        <div class="audience-grid-3">
-          <div class="aud-box">
-            <div class="aud-tag">01 / DISCOVERY</div>
-            <h3 class="aud-heading">Researchers</h3>
-            <p class="aud-copy">Faster literature synthesis across hundreds of papers without manual spreadsheet tracking.</p>
-          </div>
-          <div class="aud-box">
-            <div class="aud-tag">02 / PHARMACOLOGY</div>
-            <h3 class="aud-heading">Pharmacologists</h3>
-            <p class="aud-copy">Quick, cited compound and interaction lookups cross-checked against primary databases.</p>
-          </div>
-          <div class="aud-box">
-            <div class="aud-tag">03 / PIPELINE</div>
-            <h3 class="aud-heading">Drug discovery teams</h3>
-            <p class="aud-copy">Surfacing patterns across disease-relevant research and validating target binding mechanisms.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Section 07: Impact -->
-    <section class="content-block block-impact" id="section-impact">
-      <div class="block-container">
-        
-        <div class="block-header text-center">
-          <div class="kicker-pill centered">
-            <span class="kicker-index">07.0</span>
-            <span class="kicker-divider">/</span>
-            <span class="kicker-label">WHY IT MATTERS</span>
-          </div>
-        </div>
-
-        <div class="impact-grid-4">
-          <div class="impact-panel">
-            <span class="imp-title">FASTER SYNTHESIS</span>
-            <p class="imp-desc">Minutes, not hours of manual review</p>
-          </div>
-          <div class="impact-panel">
-            <span class="imp-title">LOWER HALLUCINATION RISK</span>
-            <p class="imp-desc">Every claim source-checked before it's shown</p>
-          </div>
-          <div class="impact-panel">
-            <span class="imp-title">FULL TRACEABILITY</span>
-            <p class="imp-desc">Every claim links back to its source</p>
-          </div>
-          <div class="impact-panel">
-            <span class="imp-title">LOWER RESEARCH COST</span>
-            <p class="imp-desc">Faster early-stage discovery cycles</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Persistent Disclaimer Strip -->
-    <div class="persistent-disclaimer-strip">
-      <div class="disclaimer-inner">
-        <span class="disc-icon">⚠️</span>
-        <code>RESEARCH AND INFORMATIONAL TOOL ONLY — NOT INTENDED FOR DIAGNOSIS OR TREATMENT</code>
-      </div>
-    </div>
-
-    <!-- Closing CTA Section -->
-    <section class="closing-cta-section">
-      <div class="block-container text-center">
-        <h2 class="closing-headline">Ask your next research question with sources attached.</h2>
-        <button class="btn-primary btn-large" onclick="openPortal()">
-          <span>Launch Research Console &rarr;</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Global Footer -->
-    <footer class="app-footer">
-      <div class="footer-wrap">
-        <div class="footer-primary">
-          <div class="footer-brand-title">BIOMINDQ // RESEARCH INTELLIGENCE</div>
-          <p class="footer-text">
-            Multi-source biomedical evidence verification layer powering precision research across PubMed, ChEMBL, DrugBank, and PubChem.
-          </p>
-        </div>
-        <div class="footer-nav-cluster">
-          <div class="f-col">
-            <span class="f-col-label">NAVIGATION</span>
-            <a href="https://github.com/KARTHIK-BATTIPROLU/BioMindQ" target="_blank">GitHub Repository ↗</a>
-            <a href="#section-architecture">System Architecture</a>
-            <a href="#section-sources">Data Sources</a>
-          </div>
-          <div class="f-col">
-            <span class="f-col-label">RESOURCES</span>
-            <a href="javascript:void(0)" onclick="openPortal()">Launch Console</a>
-            <a href="javascript:void(0)">CLADD 2025 Paper</a>
-            <a href="javascript:void(0)">API Specs</a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom-bar">
-        <span>&copy; 2026 BIOMINDQ INC. • RESEARCH AND INFORMATIONAL TOOL ONLY — NOT INTENDED FOR DIAGNOSIS OR TREATMENT</span>
-      </div>
-    </footer>
-
   </div>
 
-  <!-- Interactive Research Console Modal -->
+  <!-- Clinical Pipeline Modal -->
   <div id="portal-modal" class="modal-layer">
     <div class="modal-sheet">
       <div class="sheet-head">
-        <span class="sheet-kicker">BIOMINDQ RESEARCH CONSOLE</span>
+        <span class="sheet-kicker">PROTERA CLINICAL ACCESS</span>
         <button class="sheet-close" onclick="closePortal()">&times;</button>
       </div>
-      <h3 class="sheet-title">Submit Plain-Language Biomedical Query</h3>
+      <h3 class="sheet-title">Request DNA Ligand Docking Coordinates</h3>
       <p class="sheet-sub">
-        Query PubMed, ChEMBL, DrugBank, and PubChem simultaneously with verified source-agreement scoring.
+        Submit institutional credentials for raw PDB/SDF coordinate files and clinical protocol sheets.
       </p>
 
       <form onsubmit="handlePortalSubmit(event)" class="sheet-form">
         <div class="input-cell">
-          <label>Research Question / Target Query</label>
-          <input type="text" id="console-query-input" placeholder="e.g. Does metformin interact with AMPK?" required>
+          <label>Principal Investigator / Full Name</label>
+          <input type="text" placeholder="Dr. Julian Vance, MD, Ph.D." required>
         </div>
         <div class="input-cell">
-          <label>Target Databases to Query</label>
-          <div class="checkbox-row">
-            <label><input type="checkbox" checked disabled> PubMed</label>
-            <label><input type="checkbox" checked disabled> ChEMBL</label>
-            <label><input type="checkbox" checked disabled> DrugBank</label>
-            <label><input type="checkbox" checked disabled> PubChem</label>
-          </div>
+          <label>Institutional Email</label>
+          <input type="email" placeholder="jvance@stanford.edu" required>
+        </div>
+        <div class="input-cell">
+          <label>Therapeutic Focus Area</label>
+          <select>
+            <option>CFTR Small-Molecule Oral Correctors</option>
+            <option>SMN2 Splice-Switching Antisense Oligos</option>
+            <option>CRISPR Prime Editing In Vivo Delivery</option>
+          </select>
         </div>
         <button type="submit" class="btn-sheet-submit">
-          <span>Run Parallel Verification &rarr;</span>
+          <span>Submit Verification Request</span>
         </button>
       </form>
     </div>
   </div>
 
-  <script src="app.js?v=4.0.0"></script>
+  <script src="app.js?v=5.0.0"></script>
 </body>
 </html>

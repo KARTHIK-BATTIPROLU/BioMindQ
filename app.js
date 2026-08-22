@@ -1,218 +1,73 @@
 /**
- * BIOMINDQ // MULTI-SOURCE BIOMEDICAL EVIDENCE VERIFICATION ENGINE
- * 48,000 GPU Particle 3D DNA WebGL Canvas & Real-Time Evidence Convergence Signal
+ * PROTERA // LIGHT MODE 3D DNA DOCKING & PHARMACOGENOMICS ENGINE
+ * Interactive Three.js WebGL DNA Strand, Ligand Docking & Codon Sequence Controls
  */
 
 let scene, camera, renderer, controls;
 let autoOrbit = true;
-let isSessionActive = true;
+let isAudioActive = true;
 let audioCtx = null;
 let clock = new THREE.Clock();
 
 // Master 3D Objects
-let dnaParticleMesh, dnaShaderMaterial;
-let particleCount = 48000;
+let dnaGroup;
+let particleMesh, shaderMaterial;
+let drugLigandGroup;
 
 // Active Sequence State
 const BASES = ['A', 'T', 'G', 'C'];
-let activeSequence = [
-  'A', 'T', 'G', 'C', 'C', 'G', 'T', 'A', 'A', 'T', 'C', 'G', 'T', 'A', 'G', 'C', 'A', 'T', 'G', 'C', 'G', 'C', 'A', 'T'
-];
+let activeSequence = ['A', 'T', 'G', 'C', 'C', 'G', 'T', 'A'];
 
-// Sample Query Data Specification (§1)
-const QUERY_DATA = {
-  metformin: {
-    title: "Metformin ↔ AMPK Interaction",
-    desc: "Retrieved evidence indicates metformin activates AMPK indirectly via mitochondrial complex I inhibition. Confirmed independently across ChEMBL bioactivity records and 3 PubMed abstracts. No conflicting evidence found.",
-    confidence: "94.2%",
-    agreePct: "94.2%",
-    conflictPct: "0.0%",
-    responseTime: "4.1s",
-    badge: "3/3 SOURCES AGREE",
-    badgeClass: "badge-green",
-    pubmed: "3 Abstracts Verified",
-    chembl: "IC50 = 12.4 μM",
-    drugbank: "Target DB00331",
-    ticker: "CROSS-MATCHING PUBMED · ChEMBL · DRUGBANK · PUBCHEM"
+// Active Drug Data (Matching Screenshot)
+const DRUG_DATA = {
+  elexacaftor: {
+    title: 'Elexacaftor-01',
+    energy: '-14.2 kcal/mol',
+    kd: 'Kd = 1.4 nM',
+    res: 't1/2 = 4.8 hr',
+    conf: 'BOUND (CFTR Exon 10)',
+    color: 0x2563eb
   },
-  alzheimers: {
-    title: "Early-Stage Alzheimer's Compounds",
-    desc: "Retrieved literature details anti-amyloid monoclonal antibodies (Lecanemab, Donanemab) and BACE1 inhibitors. Verified across 14 PubMed clinical trials and ChEMBL bioactivity assay datasets.",
-    confidence: "91.8%",
-    agreePct: "91.8%",
-    conflictPct: "0.5%",
-    responseTime: "3.8s",
-    badge: "4/4 SOURCES AGREE",
-    badgeClass: "badge-cyan",
-    pubmed: "14 Clinical Trials",
-    chembl: "287 Compounds",
-    drugbank: "CID 11954316",
-    ticker: "RETRIEVED 14 PUBMED TRIALS & 287 ChEMBL ASSAYS"
+  nusinersen: {
+    title: 'Nusinersen-X',
+    energy: '-16.8 kcal/mol',
+    kd: 'Kd = 0.8 nM',
+    res: 't1/2 = 135d',
+    conf: 'BOUND (SMN2 Exon 7)',
+    color: 0x10b981
   },
-  ibuprofen: {
-    title: "Ibuprofen ↔ Lisinopril Interaction",
-    desc: "NSAIDs like ibuprofen reduce the antihypertensive effect of ACE inhibitors like lisinopril and increase renal toxicity risk. Verified across DrugBank DB01050 & 5 PubMed clinical advisories.",
-    confidence: "98.6%",
-    agreePct: "98.6%",
-    conflictPct: "12.4%",
-    responseTime: "2.9s",
-    badge: "HIGH-RISK CONFLICT",
-    badgeClass: "badge-rose",
-    pubmed: "5 Clinical Advisories",
-    chembl: "ACE Inhibitor Target",
-    drugbank: "DB01050 / DB00722",
-    ticker: "WARNING: RENAL ANTAGONISM CONFLICT DETECTED"
+  exacel: {
+    title: 'Exa-cel Prime',
+    energy: '-19.4 kcal/mol',
+    kd: '99.98% Fidelity',
+    res: 'Permanent Edit',
+    conf: 'EDITED (BCL11A Enhancer)',
+    color: 0x8b5cf6
   },
-  glp1: {
-    title: "GLP-1 Receptor Agonist Synthesis",
-    desc: "Comprehensive literature scan reveals potent glycemic control, weight reduction, and cardiovascular risk reduction (Semaglutide, Tirzepatide). Grounded in 42 PubMed RCTs & ChEMBL binding affinity data.",
-    confidence: "96.5%",
-    agreePct: "96.5%",
-    conflictPct: "0.0%",
-    responseTime: "4.5s",
-    badge: "3/3 SOURCES AGREE",
-    badgeClass: "badge-gold",
-    pubmed: "42 RCT Papers",
-    chembl: "Ki = 0.21 nM",
-    drugbank: "Target DB06655",
-    ticker: "SYNTHESIZING 42 PUBMED PAPERS & ChEMBL BINDING DATA"
+  patisiran: {
+    title: 'Patisiran-RNAi',
+    energy: '-12.6 kcal/mol',
+    kd: 't1/2 = 4.8 hr',
+    res: 't1/2 = 9.2 days',
+    conf: 'SILENCED (TTR 3\' UTR)',
+    color: 0xf59e0b
   }
 };
 
-let currentQueryKey = 'metformin';
+let currentDrugKey = 'elexacaftor';
 
-// Mouse Tracking
+// Mouse Parallax
 let mouseX = 0, mouseY = 0;
 let targetCamX = 0, targetCamY = 0;
 
-// Telemetry Waveform Engine (§5.1)
-let waveCanvas, waveCtx;
-let waveConvergenceProgress = 1.0;
-let convergenceAnimId = null;
-
 /* ==========================================================================
-   GLSL SHADERS FOR 48,000 BIOPHOTON PARTICLES
-   ========================================================================== */
-
-const vertexShader = `
-  uniform float uTime;
-  uniform float uTurbulence;
-  uniform float uDockSurge;
-  uniform vec2 uMouse;
-
-  attribute float aPhase;
-  attribute vec3 aBaseColor;
-
-  varying vec3 vColor;
-  varying float vAlpha;
-
-  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-
-  float snoise(vec3 v) {
-    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-    vec3 i  = floor(v + dot(v, C.yyy));
-    vec3 x0 = v - i + dot(i, C.xxx);
-    vec3 g = step(x0.yzx, x0.xyz);
-    vec3 l = 1.0 - g;
-    vec3 i1 = min(g.xyz, l.zxy);
-    vec3 i2 = max(g.xyz, l.zxy);
-    vec3 x1 = x0 - i1 + C.xxx;
-    vec3 x2 = x0 - i2 + C.yyy;
-    vec3 x3 = x0 - D.yyy;
-    i = mod289(i);
-    vec4 p = permute(permute(permute(
-              i.z + vec4(0.0, i1.z, i2.z, 1.0))
-            + i.y + vec4(0.0, i1.y, i2.y, 1.0))
-            + i.x + vec4(0.0, i1.x, i2.x, 1.0));
-    float n_ = 0.142857142857;
-    vec3 ns = n_ * D.wyz - D.xzx;
-    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-    vec4 x_ = floor(j * ns.z);
-    vec4 y_ = floor(j - 7.0 * x_);
-    vec4 x = x_ *ns.x + ns.yyyy;
-    vec4 y = y_ *ns.x + ns.yyyy;
-    vec4 h = 1.0 - abs(x) - abs(y);
-    vec4 b0 = vec4(x.xy, y.xy);
-    vec4 b1 = vec4(x.zw, y.zw);
-    vec4 s0 = floor(b0)*2.0 + 1.0;
-    vec4 s1 = floor(b1)*2.0 + 1.0;
-    vec4 sh = -step(h, vec4(0.0));
-    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
-    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-    vec3 p0 = vec3(a0.xy, h.x);
-    vec3 p1 = vec3(a0.zw, h.y);
-    vec3 p2 = vec3(a1.xy, h.z);
-    vec3 p3 = vec3(a1.zw, h.w);
-    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-    p0 *= norm.x;
-    p1 *= norm.y;
-    p2 *= norm.z;
-    p3 *= norm.w;
-    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-    m = m * m;
-    return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
-  }
-
-  void main() {
-    float t = uTime * 0.5 + aPhase;
-
-    vec3 noiseVec = vec3(
-      snoise(position * 0.6 + vec3(t * 0.25, 0.0, 0.0)),
-      snoise(position * 0.6 + vec3(0.0, t * 0.25, 0.0)),
-      snoise(position * 0.6 + vec3(0.0, 0.0, t * 0.25))
-    );
-
-    vec3 finalPos = position + noiseVec * (0.12 * uTurbulence);
-
-    if (uDockSurge > 0.01) {
-      float ripple = sin(length(finalPos.xz) * 6.0 - uTime * 10.0);
-      finalPos += normalize(finalPos) * ripple * (uDockSurge * 0.35);
-    }
-
-    vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
-    gl_Position = projectionMatrix * mvPosition;
-
-    float pSize = (16.0 / -mvPosition.z) * (1.0 + uDockSurge * 0.5);
-    gl_PointSize = clamp(pSize, 1.5, 42.0);
-
-    vColor = aBaseColor;
-    if (uDockSurge > 0.01) {
-      vColor = mix(vColor, vec3(1.0, 1.0, 1.0), uDockSurge * 0.7);
-    }
-
-    vAlpha = clamp(1.3 / (-mvPosition.z * 0.16), 0.25, 0.95);
-  }
-`;
-
-const fragmentShader = `
-  varying vec3 vColor;
-  varying float vAlpha;
-
-  void main() {
-    vec2 coord = gl_PointCoord - vec2(0.5);
-    float dist = length(coord);
-
-    if (dist > 0.5) discard;
-
-    float intensity = exp(-dist * 5.0);
-    gl_FragColor = vec4(vColor, vAlpha * intensity);
-  }
-`;
-
-/* ==========================================================================
-   INITIALIZE THREE.JS
+   INITIALIZE THREE.JS LIGHT SCENE
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
   initEngine();
   initCursor();
-  initWaveformCanvas();
   renderCodonStrip();
-  initArchitectureInteractivity();
   animate();
 
   window.addEventListener('resize', onResize);
@@ -222,17 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
 function initEngine() {
   const container = document.getElementById('canvas-stage');
   if (!container) return;
+
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x05070c, 0.032);
+  scene.background = new THREE.Color(0xf8fafc);
+  scene.fog = new THREE.FogExp2(0xf8fafc, 0.04);
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0.25, 8.6);
+  camera.position.set(0.8, 0.2, 8.2);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.35;
+  renderer.toneMappingExposure = 1.2;
   container.appendChild(renderer.domElement);
 
   if (typeof THREE.OrbitControls !== 'undefined') {
@@ -244,95 +101,153 @@ function initEngine() {
     controls.enablePan = false;
   }
 
-  buildParticleDNAHelix();
+  // Lighting for Light Theme
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+  scene.add(ambientLight);
+
+  const dirLight1 = new THREE.DirectionalLight(0x2563eb, 1.5);
+  dirLight1.position.set(5, 10, 7);
+  scene.add(dirLight1);
+
+  const dirLight2 = new THREE.DirectionalLight(0xf43f5e, 1.2);
+  dirLight2.position.set(-5, -5, -5);
+  scene.add(dirLight2);
+
+  build3DDNAHelix();
+  build3DDrugLigand();
 }
 
-function buildParticleDNAHelix() {
-  if (dnaParticleMesh) scene.remove(dnaParticleMesh);
+/* ==========================================================================
+   BUILD 3D DNA DOUBLE HELIX MODEL (LIGHT THEME MATCHING SCREENSHOT)
+   ========================================================================== */
 
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
-  const phases = new Float32Array(particleCount);
+function build3DDNAHelix() {
+  if (dnaGroup) scene.remove(dnaGroup);
 
-  const turns = 3.2;
-  const radius = 1.35;
-  const height = 10.5;
+  dnaGroup = new THREE.Group();
 
-  for (let i = 0; i < particleCount; i++) {
-    const t = i / particleCount;
+  const turns = 2.8;
+  const radius = 1.2;
+  const height = 9.0;
+  const count = 48; // Number of rungs
+
+  const strand1Geo = [];
+  const strand2Geo = [];
+
+  const strandMat1 = new THREE.MeshPhysicalMaterial({
+    color: 0x38bdf8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.4,
+    roughness: 0.1,
+    metalness: 0.1,
+    transmission: 0.6,
+    thickness: 0.5
+  });
+
+  const strandMat2 = new THREE.MeshPhysicalMaterial({
+    color: 0xf43f5e,
+    emissive: 0xe11d48,
+    emissiveIntensity: 0.4,
+    roughness: 0.1,
+    metalness: 0.1,
+    transmission: 0.6,
+    thickness: 0.5
+  });
+
+  const sphereGeo = new THREE.SphereGeometry(0.12, 16, 16);
+  const rungMat = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.3 });
+
+  for (let i = 0; i <= count; i++) {
+    const t = i / count;
     const y = (t - 0.5) * height;
     const angle = t * Math.PI * 2 * turns;
 
-    let x, z;
-    let c = new THREE.Color(0x00f0ff);
+    const x1 = Math.cos(angle) * radius;
+    const z1 = Math.sin(angle) * radius;
 
-    if (i < particleCount * 0.7) {
-      const strand = (i % 2 === 0) ? 0 : Math.PI;
-      const strandRad = radius + (Math.random() - 0.5) * 0.18;
+    const x2 = Math.cos(angle + Math.PI) * radius;
+    const z2 = Math.sin(angle + Math.PI) * radius;
 
-      x = Math.cos(angle + strand) * strandRad;
-      z = Math.sin(angle + strand) * strandRad;
+    const p1 = new THREE.Vector3(x1, y, z1);
+    const p2 = new THREE.Vector3(x2, y, z2);
 
-      if (strand === 0) c = new THREE.Color(0x00f0ff);
-      else c = new THREE.Color(0x00e676);
-    } else if (i < particleCount * 0.9) {
-      const interp = Math.random();
-      const rad1 = Math.cos(angle) * radius;
-      const rad2 = Math.cos(angle + Math.PI) * radius;
-      const zrad1 = Math.sin(angle) * radius;
-      const zrad2 = Math.sin(angle + Math.PI) * radius;
+    strand1Geo.push(p1);
+    strand2Geo.push(p2);
 
-      x = rad1 * interp + rad2 * (1.0 - interp);
-      z = zrad1 * interp + zrad2 * (1.0 - interp);
+    // Render Helical Joints
+    const joint1 = new THREE.Mesh(sphereGeo, strandMat1);
+    joint1.position.copy(p1);
+    dnaGroup.add(joint1);
 
-      const baseMod = Math.floor(t * activeSequence.length) % activeSequence.length;
-      const base = activeSequence[baseMod];
+    const joint2 = new THREE.Mesh(sphereGeo, strandMat2);
+    joint2.position.copy(p2);
+    dnaGroup.add(joint2);
 
-      if (base === 'A') c = new THREE.Color(0x00f0ff);
-      else if (base === 'T') c = new THREE.Color(0xff2d55);
-      else if (base === 'G') c = new THREE.Color(0x00e676);
-      else c = new THREE.Color(0xffd600);
-    } else {
-      const solAngle = Math.random() * Math.PI * 2;
-      const solR = radius + 0.4 + Math.random() * 1.2;
-      x = Math.cos(solAngle) * solR;
-      z = Math.sin(solAngle) * solR;
-      c = new THREE.Color(0xa855f7);
-    }
+    // Render Nucleotide Connecting Rungs
+    const curve = new THREE.LineCurve3(p1, p2);
+    const tubeGeo = new THREE.TubeGeometry(curve, 8, 0.05, 8, false);
+    
+    let rungColor = 0x38bdf8;
+    if (i % 4 === 1) rungColor = 0xf43f5e;
+    else if (i % 4 === 2) rungColor = 0x10b981;
+    else if (i % 4 === 3) rungColor = 0xf59e0b;
 
-    pos[i * 3] = x;
-    pos[i * 3 + 1] = y;
-    pos[i * 3 + 2] = z;
-
-    colors[i * 3] = c.r;
-    colors[i * 3 + 1] = c.g;
-    colors[i * 3 + 2] = c.b;
-
-    phases[i] = Math.random() * Math.PI * 2;
+    const rMat = new THREE.MeshStandardMaterial({ color: rungColor, roughness: 0.3 });
+    const rungMesh = new THREE.Mesh(tubeGeo, rMat);
+    dnaGroup.add(rungMesh);
   }
 
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute('aBaseColor', new THREE.BufferAttribute(colors, 3));
-  geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
+  // Render Dual Backbones
+  const curve1 = new THREE.CatmullRomCurve3(strand1Geo);
+  const tube1 = new THREE.TubeGeometry(curve1, 100, 0.08, 12, false);
+  const backbone1 = new THREE.Mesh(tube1, strandMat1);
+  dnaGroup.add(backbone1);
 
-  dnaShaderMaterial = new THREE.ShaderMaterial({
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader,
-    uniforms: {
-      uTime: { value: 0.0 },
-      uTurbulence: { value: 1.2 },
-      uDockSurge: { value: 0.0 },
-      uMouse: { value: new THREE.Vector2(0, 0) }
-    },
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
+  const curve2 = new THREE.CatmullRomCurve3(strand2Geo);
+  const tube2 = new THREE.TubeGeometry(curve2, 100, 0.08, 12, false);
+  const backbone2 = new THREE.Mesh(tube2, strandMat2);
+  dnaGroup.add(backbone2);
+
+  // Position DNA Helix on the right side of the screen
+  dnaGroup.position.set(1.6, -0.2, 0);
+  scene.add(dnaGroup);
+}
+
+/* ==========================================================================
+   BUILD 3D DRUG LIGAND
+   ========================================================================== */
+
+function build3DDrugLigand() {
+  drugLigandGroup = new THREE.Group();
+
+  const coreGeo = new THREE.IcosahedronGeometry(0.35, 2);
+  const coreMat = new THREE.MeshPhysicalMaterial({
+    color: 0x2563eb,
+    emissive: 0x1d4ed8,
+    emissiveIntensity: 0.8,
+    metalness: 0.4,
+    roughness: 0.1,
+    clearcoat: 1.0
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  drugLigandGroup.add(core);
+
+  const atomMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8, roughness: 0.1 });
+  const offsets = [
+    new THREE.Vector3(0.38, 0.2, 0.0),
+    new THREE.Vector3(-0.38, -0.2, 0.0),
+    new THREE.Vector3(0.0, 0.38, 0.25),
+    new THREE.Vector3(0.0, -0.38, -0.25)
+  ];
+  offsets.forEach(pt => {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), atomMat);
+    s.position.copy(pt);
+    drugLigandGroup.add(s);
   });
 
-  dnaParticleMesh = new THREE.Points(geo, dnaShaderMaterial);
-  dnaParticleMesh.position.set(1.4, 0, 0);
-  scene.add(dnaParticleMesh);
+  drugLigandGroup.position.set(3.5, 0.2, 1.2);
+  drugLigandGroup.visible = false;
+  if (dnaGroup) dnaGroup.add(drugLigandGroup);
 }
 
 /* ==========================================================================
@@ -343,25 +258,16 @@ function animate() {
   requestAnimationFrame(animate);
 
   const delta = clock.getDelta();
-  const time = clock.getElapsedTime();
 
-  if (dnaShaderMaterial) {
-    dnaShaderMaterial.uniforms.uTime.value = time;
-    const surge = dnaShaderMaterial.uniforms.uDockSurge.value;
-    if (surge > 0.001) {
-      dnaShaderMaterial.uniforms.uDockSurge.value = THREE.MathUtils.lerp(surge, 0.0, 0.05);
-    }
-  }
-
-  if (autoOrbit && dnaParticleMesh) {
-    dnaParticleMesh.rotation.y += delta * 0.25;
+  if (autoOrbit && dnaGroup) {
+    dnaGroup.rotation.y += delta * 0.25;
   }
 
   targetCamX = mouseX * 0.35;
   targetCamY = mouseY * 0.35;
-  if (dnaParticleMesh) {
-    dnaParticleMesh.rotation.x = THREE.MathUtils.lerp(dnaParticleMesh.rotation.x, targetCamY * 0.2, 0.05);
-    dnaParticleMesh.rotation.z = THREE.MathUtils.lerp(dnaParticleMesh.rotation.z, targetCamX * 0.15, 0.05);
+  if (dnaGroup) {
+    dnaGroup.rotation.x = THREE.MathUtils.lerp(dnaGroup.rotation.x, targetCamY * 0.15, 0.05);
+    dnaGroup.rotation.z = THREE.MathUtils.lerp(dnaGroup.rotation.z, targetCamX * 0.1, 0.05);
   }
 
   if (controls) controls.update();
@@ -381,190 +287,83 @@ function onMouseMove(e) {
 }
 
 /* ==========================================================================
-   SAMPLE QUERY EXECUTION & VERIFICATION ENGINE
+   INTERACTIVE SELECTION & DOCKING
    ========================================================================== */
 
-function runSampleQuery(key, evt) {
-  currentQueryKey = key;
-  const q = QUERY_DATA[key];
-  if (!q) return;
+function dockTherapeutic(key, evt) {
+  currentDrugKey = key;
+  const d = DRUG_DATA[key];
+  if (!d) return;
 
-  playAcousticTone(640, 0.1);
+  playAcousticTone(580, 0.1);
 
   if (evt && evt.currentTarget) {
     document.querySelectorAll('.shelf-card').forEach(c => c.classList.remove('active'));
     evt.currentTarget.classList.add('active');
   }
 
-  const confElem = document.getElementById('confidence-stat');
-  if (confElem) confElem.innerHTML = `${parseFloat(q.confidence)}<span class="unit-text">%</span>`;
+  document.getElementById('stat-energy').textContent = d.energy;
+  document.getElementById('stat-kd').textContent = d.kd;
+  document.getElementById('stat-res').textContent = d.res;
+  document.getElementById('stat-conf').textContent = d.conf;
 
-  const badgeElem = document.getElementById('agree-badge');
-  if (badgeElem) {
-    badgeElem.textContent = q.badge;
-    badgeElem.className = `panel-badge ${q.badgeClass}`;
-  }
-
-  document.getElementById('agree-display').textContent = q.agreePct;
-  document.getElementById('conflict-display').textContent = q.conflictPct;
-  document.getElementById('time-display').textContent = q.responseTime;
-
-  document.getElementById('query-title').textContent = q.title;
-  document.getElementById('query-desc').textContent = q.desc;
-  document.getElementById('spec-pubmed').textContent = q.pubmed;
-  document.getElementById('spec-chembl').textContent = q.chembl;
-  document.getElementById('spec-drugbank').textContent = q.drugbank;
-
-  document.getElementById('ticker-query-text').textContent = q.ticker;
-  document.getElementById('ticker-agree-val').textContent = q.agreePct;
-
-  if (dnaShaderMaterial) {
-    dnaShaderMaterial.uniforms.uDockSurge.value = 1.0;
-  }
-
-  triggerSourceCrossCheck();
+  triggerDockingAnimation();
 }
 
-function triggerSourceCrossCheck() {
+function triggerDockingAnimation() {
   playAcousticTone(880, 0.2);
-  waveConvergenceProgress = 0.0;
-  
-  if (convergenceAnimId) cancelAnimationFrame(convergenceAnimId);
+  if (!drugLigandGroup) return;
 
-  const startTime = Date.now();
-  const duration = 800; // 800ms per spec §5.1
+  drugLigandGroup.visible = true;
 
-  function animateConvergence() {
-    const elapsed = Date.now() - startTime;
-    waveConvergenceProgress = Math.min(elapsed / duration, 1.0);
+  let t = 0;
+  const interval = setInterval(() => {
+    t += 0.04;
+    drugLigandGroup.position.x = THREE.MathUtils.lerp(3.5, 0.1, t);
+    drugLigandGroup.position.z = THREE.MathUtils.lerp(1.2, 0.6, t);
+    drugLigandGroup.rotation.y += 0.12;
 
-    if (waveConvergenceProgress < 1.0) {
-      convergenceAnimId = requestAnimationFrame(animateConvergence);
+    if (t >= 1) {
+      clearInterval(interval);
+      playAcousticTone(1040, 0.25);
     }
-  }
-  animateConvergence();
+  }, 25);
 }
 
-function reRunQuery() {
-  runSampleQuery(currentQueryKey);
+function injectMutation() {
+  playAcousticTone(340, 0.15);
+  activeSequence[3] = 'T';
+  activeSequence[4] = 'A';
+  renderCodonStrip();
+  build3DDNAHelix();
+
+  document.getElementById('stat-energy').textContent = '-8.4 kcal/mol';
+  document.getElementById('stat-conf').textContent = 'MUTATED (Pathogenic Delta)';
 }
 
-function resetQueryState() {
-  runSampleQuery('metformin');
-}
+function restoreWildtype() {
+  playAcousticTone(640, 0.1);
+  activeSequence = ['A', 'T', 'G', 'C', 'C', 'G', 'T', 'A'];
+  renderCodonStrip();
+  build3DDNAHelix();
 
-function toggleEvidenceView() {
-  const card = document.getElementById('query-profile-card');
-  if (card) {
-    card.classList.toggle('highlight-evidence');
-    playAcousticTone(520, 0.08);
-  }
-}
-
-/* ==========================================================================
-   2D SOURCE AGREEMENT SIGNAL WAVEFORM CANVAS (§5.1)
-   ========================================================================== */
-
-function initWaveformCanvas() {
-  waveCanvas = document.getElementById('waveform-canvas');
-  if (!waveCanvas) return;
-  waveCtx = waveCanvas.getContext('2d');
-
-  setInterval(drawMultiTraceWaveStep, 35);
-}
-
-function drawMultiTraceWaveStep() {
-  if (!waveCtx || !waveCanvas) return;
-  const w = waveCanvas.width;
-  const h = waveCanvas.height;
-  const midY = h / 2;
-
-  waveCtx.clearRect(0, 0, w, h);
-
-  const t = Date.now() / 1000;
-  const sources = [
-    { name: 'PubMed', color: '#00f0ff', offset: 0, amp: 16 },
-    { name: 'ChEMBL', color: '#00e676', offset: 1.2, amp: 14 },
-    { name: 'DrugBank', color: '#ffd600', offset: 2.4, amp: 18 },
-    { name: 'PubChem', color: '#a855f7', offset: 3.6, amp: 12 }
-  ];
-
-  sources.forEach((src) => {
-    waveCtx.beginPath();
-    waveCtx.strokeStyle = src.color;
-    waveCtx.lineWidth = 1.6;
-    waveCtx.shadowBlur = 4;
-    waveCtx.shadowColor = src.color;
-
-    for (let x = 0; x < w; x += 3) {
-      const normX = x / w;
-      const spread = (1.0 - Math.pow(normX, 1.5)) * (1.0 - waveConvergenceProgress);
-      const phaseOffset = src.offset * spread;
-
-      const y = midY + Math.sin(t * 4.5 + x * 0.06 + phaseOffset) * (src.amp * (0.3 + spread * 0.7));
-
-      if (x === 0) waveCtx.moveTo(x, y);
-      else waveCtx.lineTo(x, y);
-    }
-    waveCtx.stroke();
-  });
-}
-
-/* ==========================================================================
-   ARCHITECTURE SECTION INTERACTIVITY (§5.2)
-   ========================================================================== */
-
-function initArchitectureInteractivity() {
-  const verifyState = document.getElementById('arch-verify-state');
-  const verifyText = document.getElementById('arch-verify-text');
-  let isAgreeState = true;
-
-  if (verifyState && verifyText) {
-    setInterval(() => {
-      isAgreeState = !isAgreeState;
-      if (isAgreeState) {
-        verifyText.textContent = '3/3 SOURCES AGREE (94.2%)';
-        verifyState.className = 'verifier-live-badge state-agree';
-      } else {
-        verifyText.textContent = 'SOURCE CONFLICT FLAGGED';
-        verifyState.className = 'verifier-live-badge state-conflict';
-      }
-    }, 6000);
-  }
-
-  const archNodes = document.querySelectorAll('.arch-stage-node');
-  if ('IntersectionObserver' in window && archNodes.length > 0) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('node-active');
-        }
-      });
-    }, { threshold: 0.2 });
-
-    archNodes.forEach(node => observer.observe(node));
+  const d = DRUG_DATA[currentDrugKey];
+  if (d) {
+    document.getElementById('stat-energy').textContent = d.energy;
+    document.getElementById('stat-conf').textContent = d.conf;
   }
 }
 
-function switchArchTab(tabType) {
-  const evView = document.getElementById('tab-evidence-view');
-  const sumView = document.getElementById('tab-summary-view');
-  const buttons = document.querySelectorAll('.out-tab');
+function toggleAutoOrbit() {
+  autoOrbit = !autoOrbit;
+  const btn = document.getElementById('orbit-btn');
+  if (btn) btn.textContent = autoOrbit ? 'Pause Orbit' : 'Resume Orbit';
+}
 
-  if (!evView || !sumView) return;
-
-  buttons.forEach(b => b.classList.remove('active'));
-
-  if (tabType === 'evidence') {
-    evView.classList.remove('hidden');
-    sumView.classList.add('hidden');
-    if (buttons[0]) buttons[0].classList.add('active');
-  } else {
-    sumView.classList.remove('hidden');
-    evView.classList.add('hidden');
-    if (buttons[1]) buttons[1].classList.add('active');
-  }
-  playAcousticTone(720, 0.08);
+function resetPerspective() {
+  camera.position.set(0.8, 0.2, 8.2);
+  if (controls) controls.target.set(0, 0, 0);
+  if (dnaGroup) dnaGroup.rotation.set(0, 0, 0);
 }
 
 /* ==========================================================================
@@ -586,7 +385,6 @@ function renderCodonStrip() {
       <span class="codon-pos">${idx + 1}</span>
       <span class="codon-base">${base}</span>
     `;
-    pill.title = `Codon Pos ${idx + 1}: ${base} (Click to toggle)`;
     pill.onclick = () => cycleBase(idx);
     strip.appendChild(pill);
   });
@@ -603,7 +401,7 @@ function cycleBase(idx) {
 
   playAcousticTone(520 + idx * 15, 0.05);
   renderCodonStrip();
-  buildParticleDNAHelix();
+  build3DDNAHelix();
 }
 
 /* ==========================================================================
@@ -611,7 +409,7 @@ function cycleBase(idx) {
    ========================================================================== */
 
 function playAcousticTone(freq, dur) {
-  if (!isSessionActive) return;
+  if (!isAudioActive) return;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioCtx.createOscillator();
@@ -629,10 +427,10 @@ function playAcousticTone(freq, dur) {
   } catch (e) {}
 }
 
-function toggleSessionState() {
-  isSessionActive = !isSessionActive;
-  const txt = document.getElementById('session-txt');
-  if (txt) txt.textContent = isSessionActive ? 'SESSION: LIVE' : 'SESSION: MUTED';
+function toggleAudio() {
+  isAudioActive = !isAudioActive;
+  const txt = document.getElementById('sound-txt');
+  if (txt) txt.textContent = isAudioActive ? 'AUDIO: ON' : 'AUDIO: MUTED';
 }
 
 function initCursor() {
@@ -667,7 +465,6 @@ function closePortal() {
 
 function handlePortalSubmit(e) {
   e.preventDefault();
-  const queryVal = document.getElementById('console-query-input').value;
-  alert(`Parallel verification initiated for query:\n"${queryVal}"\n\nQuerying PubMed, ChEMBL, DrugBank, and PubChem simultaneously.`);
+  alert('Clinical access inquiry received. Coordinate files dispatched to your institutional address.');
   closePortal();
 }
