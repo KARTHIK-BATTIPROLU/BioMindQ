@@ -1,6 +1,9 @@
 /**
- * BIOMINDQ // 3D DNA HELIX ROTATION & TOUCHPAD / MOUSE PAD SCROLL ENGINE
+ * BIOMINDQ // LANDING PAGE V2 3D SCROLL & CHATBOT ENGINE
  */
+
+// Master Chatbot Console URL Constant
+const CHATBOT_URL = "http://localhost:3001"; // One-line edit swaps in real deployed URL
 
 let scene, camera, renderer, controls;
 let autoOrbit = true;
@@ -18,6 +21,9 @@ let mouseX = 0, mouseY = 0;
 let targetCamX = 0, targetCamY = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Bind all CTA chatbot links to CHATBOT_URL
+  bindChatbotLinks();
+
   initEngine();
   animate();
 
@@ -37,9 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   // Page starts at top of page (scrollY = 0: smaller & centered)
-  window.scrollTo(0, 0);
   onScroll();
 });
+
+function bindChatbotLinks() {
+  document.querySelectorAll('.cta-chatbot-link').forEach(link => {
+    link.href = CHATBOT_URL;
+  });
+}
 
 function initEngine() {
   const container = document.getElementById('canvas-stage');
@@ -169,17 +180,15 @@ function build3DDNAHelix() {
   const backbone2 = new THREE.Mesh(tube2, strandMat2);
   dnaGroup.add(backbone2);
 
-  // Initial State: Centered & Smaller (Picture 1)
+  // Initial State: Centered & Smaller
   dnaGroup.position.set(0.0, -0.2, 0);
   dnaGroup.scale.set(0.65, 0.65, 0.65);
   scene.add(dnaGroup);
 }
 
 function onScroll() {
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const maxScroll = window.innerHeight * 1.5;
   if (maxScroll > 0) {
-    // Scrolling DOWN (scrollY increases -> progress = 1, Zoom IN & Shift to Right)
-    // Scrolling UP (scrollY = 0 -> progress = 0, Zoom OUT & Center)
     targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
   }
 }
