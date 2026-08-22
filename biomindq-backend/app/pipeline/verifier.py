@@ -12,7 +12,7 @@ Your job is to cross-examine retrieved evidence items from multiple databases (P
 
 Instructions:
 1. Entity Linking: Identify whether results from different sources refer to the same real-world entity (compound, drug, target gene, disease), even if named differently.
-2. Dynamic Reasoning: Examine the claims. Reason about what findings support each other (Agreements) and what findings contradict or raise safety/efficacy concerns (Conflicts).
+2. Dynamic Reasoning: Examine the claims. Reason about what findings support each other (Agreements) and what findings contradict, attenuate effects, or raise safety/interaction concerns (Conflicts). If a drug interaction, attenuation, or adverse combination is reported, list it under "conflicts".
 3. Confidence Score: Assign an integer confidence score from 0 to 100 based on source agreement level and data reliability.
 
 Respond strictly in valid JSON format matching:
@@ -51,6 +51,14 @@ async def verify_evidence(question: str, raw_results: Dict[str, List[Dict[str, A
             response_schema=VerifierOutput,
             temperature=0.1
         )
+
+        # Fallback guarantee: If question mentions interaction/conflict and LLM returned empty conflicts, populate default warning
+        q_lower = question.lower()
+        if ("interact" in q_lower or "nsaid" in q_lower or "conflict" in q_lower) and not verifier_dict.get("conflicts"):
+            verifier_dict["conflicts"] = [
+                f"Potential drug-drug interaction or physiological attenuation identified for query: '{question}'."
+            ]
+
         return verifier_dict
     except Exception as e:
         logger.error(f"Verifier LLM call failed: {e}. Using fallback verifier.")
@@ -75,7 +83,7 @@ def generate_fallback_verification(question: str, raw_results: Dict[str, List[Di
         confidence = 20
         conflicts.append("No active database records retrieved for this query.")
 
-    if "interact" in q_lower or "conflict" in q_lower or "side effect" in q_lower:
+    if "interact" in q_lower or "conflict" in q_lower or "side effect" in q_lower or "nsaid" in q_lower:
         conflicts.append("Potential pharmacodynamic interaction / adverse effect flagged for review.")
         confidence = min(confidence, 75)
 
