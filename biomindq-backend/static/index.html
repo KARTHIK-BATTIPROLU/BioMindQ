@@ -78,21 +78,53 @@
       border-radius: 9999px;
     }
 
-    .status-badge {
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .btn-nav {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-dark);
+      color: var(--text-main);
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--accent-emerald);
+      font-size: 0.78rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 0.4rem;
     }
 
-    .pulse {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 8px var(--accent-emerald);
+    .btn-nav:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .btn-nav-primary {
+      background: var(--accent-cyan);
+      color: #090d16;
+      font-weight: 700;
+      border: none;
+    }
+
+    .btn-nav-primary:hover {
+      background: #22d3ee;
+      color: #090d16;
+    }
+
+    .user-tag {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
     }
 
     main {
@@ -156,17 +188,15 @@
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
 
     .card-meta-bar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      border-bottom: 1px solid var(--border-dark);
-      padding-bottom: 0.75rem;
+      justify-content: space-between;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
       flex-wrap: wrap;
       gap: 0.5rem;
     }
@@ -174,68 +204,73 @@
     .badges-group {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
 
     .conf-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--accent-cyan);
-      background: rgba(6, 182, 212, 0.15);
-      padding: 0.25rem 0.6rem;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid var(--border-cyan);
+      padding: 0.25rem 0.65rem;
       border-radius: 4px;
-      border: 1px solid rgba(6, 182, 212, 0.3);
     }
 
     .consensus-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
       font-weight: 700;
-      padding: 0.25rem 0.6rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 4px;
-      text-transform: uppercase;
     }
 
     .consensus-strong {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.12);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .consensus-mixed {
-      color: #fcd34d;
-      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
       border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .consensus-conflicting {
-      color: #fca5a5;
-      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.12);
       border: 1px solid rgba(244, 63, 94, 0.3);
     }
 
     .latency-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       color: var(--text-sub);
     }
 
     .section-title {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
+      font-size: 0.75rem;
       color: var(--accent-cyan);
-      margin-bottom: 0.5rem;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
     }
 
     .evidence-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 0.85rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
     }
 
     .evidence-card {
-      background: rgba(30, 41, 59, 0.5);
+      background: var(--bg-surface);
       border: 1px solid var(--border-dark);
+      padding: 1rem;
       border-radius: 8px;
-      padding: 0.85rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -243,147 +278,217 @@
 
     .ev-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
     }
 
     .ev-source {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--accent-emerald);
-      text-transform: uppercase;
+      font-size: 0.7rem;
+      color: var(--accent-purple);
+      font-weight: 600;
     }
 
     .stance-tag {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
+      font-size: 0.65rem;
       font-weight: 700;
       padding: 0.15rem 0.45rem;
       border-radius: 4px;
-      text-transform: uppercase;
     }
 
     .stance-supports {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.12);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .stance-contrasts {
-      color: #fcd34d;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
     }
 
     .stance-mentions {
-      color: #94a3b8;
-      background: rgba(148, 163, 184, 0.15);
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .ev-claim {
-      font-size: 0.85rem;
-      color: var(--text-main);
+      font-size: 0.88rem;
+      color: #cbd5e1;
       line-height: 1.5;
     }
 
     .ev-link {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: var(--accent-cyan);
       text-decoration: none;
+      margin-top: 0.2rem;
     }
 
     .ev-link:hover { text-decoration: underline; }
 
     .ai-summary-box {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.9);
       border-left: 3px solid var(--accent-cyan);
-      padding: 1rem 1.25rem;
+      padding: 1.25rem;
       border-radius: 0 8px 8px 0;
       font-size: 0.95rem;
-      line-height: 1.7;
+      line-height: 1.65;
       color: #e2e8f0;
     }
 
     .disclaimer-strip {
       font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       color: var(--text-sub);
       text-align: center;
-      padding: 0.6rem;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 6px;
-      border: 1px dashed var(--border-dark);
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border-dark);
     }
 
-    /* Input Floating Dock */
-    .input-dock {
+    .input-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       background: rgba(9, 13, 22, 0.95);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
       border-top: 1px solid var(--border-dark);
       padding: 1rem 2rem;
+      display: flex;
+      justify-content: center;
       z-index: 100;
     }
 
     .input-wrapper {
       max-width: 1100px;
-      margin: 0 auto;
+      width: 100%;
       display: flex;
       gap: 0.75rem;
     }
 
-    .input-field {
+    input[type="text"], input[type="email"], input[type="password"] {
       flex: 1;
-      background: rgba(30, 41, 59, 0.8);
+      background: var(--bg-surface);
       border: 1px solid var(--border-dark);
-      border-radius: 8px;
-      padding: 0.85rem 1.15rem;
       color: var(--text-main);
       font-family: var(--font-sans);
       font-size: 0.95rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 8px;
       outline: none;
-      transition: all 0.2s;
+      transition: border-color 0.2s;
     }
 
-    .input-field:focus {
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
     }
 
     .btn-send {
       background: var(--accent-cyan);
       color: #090d16;
       font-weight: 700;
-      font-family: var(--font-sans);
       font-size: 0.9rem;
-      padding: 0 1.5rem;
+      padding: 0 1.75rem;
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.2s;
     }
 
-    .btn-send:hover {
-      background: #22d3ee;
-      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    .btn-send:hover { background: #22d3ee; }
+
+    /* Modals & Drawers */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
 
-    .loading-spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(6, 182, 212, 0.3);
-      border-top-color: var(--accent-cyan);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-tab {
+      flex: 1;
+      padding: 0.6rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--text-sub);
+      border-bottom: 2px solid transparent;
+    }
+
+    .modal-tab.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .modal-graph-box {
+      max-width: 850px;
+      width: 100%;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #graph-canvas {
+      flex: 1;
+      background: #0b1120;
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -391,116 +496,232 @@
   <header>
     <div class="brand">
       <span class="brand-dot"></span>
-      <span>BIOMINDQ</span>
-      <span class="brand-pill">RESEARCH INTELLIGENCE CHATBOT</span>
+      <span>BioMindQ</span>
+      <span class="brand-pill">RESEARCH BRAIN v2</span>
     </div>
-    <div class="status-badge">
-      <span class="pulse"></span>
-      <span>BACKEND: HTTP://LOCALHOST:3001</span>
+
+    <div class="nav-actions">
+      <div id="auth-unauth" style="display: flex; gap: 0.6rem;">
+        <button class="btn-nav" onclick="openAuthModal('login')">Login</button>
+        <button class="btn-nav btn-nav-primary" onclick="openAuthModal('register')">Register Free</button>
+      </div>
+
+      <div id="auth-auth" style="display: none; align-items: center; gap: 0.6rem;">
+        <span class="user-tag" id="user-email-display">user@biomindq.ai</span>
+        <button class="btn-nav" onclick="openSessionsModal()">📜 My Sessions</button>
+        <button class="btn-nav" onclick="openResearchMapModal()">🧬 Research Map</button>
+        <button class="btn-nav" onclick="handleLogout()">Logout</button>
+      </div>
     </div>
   </header>
 
   <main>
-    <!-- Sample Presets -->
     <div class="presets-row">
-      <button class="btn-preset" onclick="askPreset('What is known about metformin\'s interaction with AMPK?')">
-        🧪 Metformin ↔ AMPK
-      </button>
-      <button class="btn-preset" onclick="askPreset('Does ibuprofen interact with lisinopril?')">
-        ⚠️ Ibuprofen ↔ Lisinopril
-      </button>
-      <button class="btn-preset" onclick="askPreset('Summarize recent findings on GLP-1 receptor agonists.')">
-        🧬 GLP-1 Literature Scan
-      </button>
-      <button class="btn-preset" onclick="askPreset('What compounds are being studied for early-stage Alzheimer\'s?')">
-        🧠 Alzheimer's Compounds
-      </button>
+      <button class="btn-preset" onclick="setQuery('What is known about metformin\'s interaction with AMPK?')">🧪 Metformin & AMPK</button>
+      <button class="btn-preset" onclick="setQuery('Does ibuprofen interact with lisinopril?')">💊 Ibuprofen vs Lisinopril</button>
+      <button class="btn-preset" onclick="setQuery('Summarize recent findings on GLP-1 receptor agonists.')">🧬 GLP-1 Agonists</button>
+      <button class="btn-preset" onclick="setQuery('What compounds are being studied for early-stage Alzheimer\'s?')">🧠 Alzheimer's Targets</button>
     </div>
 
-    <!-- Chat Messages Container -->
     <div class="chat-container" id="chat-flow">
-      <!-- Initial Welcome Card -->
       <div class="bot-card">
         <div class="card-meta-bar">
           <div class="badges-group">
-            <span class="conf-badge">BIOMINDQ ENGINE READY</span>
-            <span class="consensus-badge consensus-strong">CONSENSUS METER & CITATION TAGGING ACTIVE</span>
+            <span class="conf-badge">100% EVIDENCE GROUNDED</span>
+            <span class="consensus-badge consensus-strong">4 SOURCES INTEGRATED</span>
           </div>
-          <span class="latency-tag">Connected to PubMed, ChEMBL, PubChem, DrugBank</span>
+          <span class="latency-tag">PubMed • ChEMBL • DrugBank • PubChem</span>
         </div>
-        <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6;">
-          Welcome to the <strong>BioMindQ Research Intelligence Tester</strong>. Type a biomedical question or pick a sample prompt above to query live databases, cross-verify findings, view consensus meter scores, and inspect citation-context tagged evidence.
-        </p>
+        <div class="ai-summary-box">
+          Welcome to <strong>BioMindQ</strong>. Ask any biomedical or pharmacological research query below. Anonymous visitors get 1 free trial query; registered researchers get unlimited queries, persistent session history, and cross-session <strong>Research Maps</strong>.
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Input Dock -->
-  <div class="input-dock">
+  <div class="input-bar">
     <div class="input-wrapper">
-      <input type="text" id="user-input" class="input-field" placeholder="Ask a biomedical research question (e.g., Metformin mechanism, drug interactions)..." onkeydown="handleKeyDown(event)">
-      <button class="btn-send" id="send-btn" onclick="submitQuery()">
-        <span>Query Engine</span>
-      </button>
+      <input type="text" id="query-input" placeholder="Ask a biomedical research question (e.g. What is metformin's mechanism on AMPK?)..." onkeydown="if(event.key === 'Enter') submitQuery()">
+      <button class="btn-send" onclick="submitQuery()">Execute Query &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('auth-modal')">&times;</button>
+      
+      <div class="modal-tabs">
+        <div class="modal-tab active" id="tab-login" onclick="switchAuthTab('login')">LOGIN</div>
+        <div class="modal-tab" id="tab-register" onclick="switchAuthTab('register')">REGISTER FREE</div>
+      </div>
+
+      <div id="trial-alert" style="display: none; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent-amber); padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; color: #fcd34d;">
+        🔒 You have used your 1 free trial query! Sign up or log in to continue asking research queries.
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="form-group">
+          <label>INSTITUTIONAL EMAIL</label>
+          <input type="email" id="auth-email" required placeholder="researcher@stanford.edu">
+        </div>
+        <div class="form-group">
+          <label>PASSWORD</label>
+          <input type="password" id="auth-password" required minlength="6" placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-send" style="width: 100%; margin-top: 0.5rem;" id="auth-submit-btn">Login to Console</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- My Sessions Modal -->
+  <div class="modal-overlay" id="sessions-modal">
+    <div class="modal-box" style="max-width: 650px;">
+      <button class="modal-close" onclick="closeModal('sessions-modal')">&times;</button>
+      <div class="section-title">📜 My Saved Sessions</div>
+      <div id="sessions-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="color: var(--text-sub); font-size: 0.85rem;">Loading sessions...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Research Map Modal -->
+  <div class="modal-overlay" id="graph-modal">
+    <div class="modal-box modal-graph-box">
+      <button class="modal-close" onclick="closeModal('graph-modal')">&times;</button>
+      <div class="section-title">🧬 My Research Map (Cross-Session Knowledge Graph)</div>
+      <div style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 0.5rem;">
+        Interactive visualization connecting your queries, topics, and extracted entities.
+      </div>
+      <canvas id="graph-canvas"></canvas>
     </div>
   </div>
 
   <script>
-    const API_ENDPOINT = '/api/query';
+    let currentAuthMode = 'login';
+    let currentUser = null;
 
-    function handleKeyDown(e) {
-      if (e.key === 'Enter') submitQuery();
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthStatus();
+    });
+
+    async function checkAuthStatus() {
+      try {
+        const res = await fetch('/auth/me');
+        if (res.ok) {
+          currentUser = await res.json();
+          renderAuthUI();
+        }
+      } catch (e) {}
     }
 
-    function askPreset(txt) {
-      document.getElementById('user-input').value = txt;
-      submitQuery();
+    function renderAuthUI() {
+      if (currentUser) {
+        document.getElementById('auth-unauth').style.display = 'none';
+        document.getElementById('auth-auth').style.display = 'flex';
+        document.getElementById('user-email-display').textContent = currentUser.email;
+      } else {
+        document.getElementById('auth-unauth').style.display = 'flex';
+        document.getElementById('auth-auth').style.display = 'none';
+      }
+    }
+
+    function setQuery(text) {
+      document.getElementById('query-input').value = text;
+    }
+
+    function openAuthModal(mode, isTrialAlert = false) {
+      currentAuthMode = mode;
+      switchAuthTab(mode);
+      document.getElementById('trial-alert').style.display = isTrialAlert ? 'block' : 'none';
+      document.getElementById('auth-modal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+      document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+      document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Login to Console' : 'Register Account';
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+
+      const endpoint = currentAuthMode === 'login' ? '/auth/login' : '/auth/register';
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.detail || 'Authentication failed');
+
+        currentUser = data.user;
+        renderAuthUI();
+        closeModal('auth-modal');
+        alert(`Successfully ${currentAuthMode === 'login' ? 'logged in' : 'registered'}!`);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function handleLogout() {
+      await fetch('/auth/logout', { method: 'POST' });
+      currentUser = null;
+      renderAuthUI();
     }
 
     async function submitQuery() {
-      const input = document.getElementById('user-input');
+      const input = document.getElementById('query-input');
       const question = input.value.trim();
       if (!question) return;
 
       const chatFlow = document.getElementById('chat-flow');
-
-      // User Message Bubble
-      const userBubble = document.createElement('div');
-      userBubble.className = 'user-msg';
-      userBubble.textContent = question;
-      chatFlow.appendChild(userBubble);
-
+      
+      const userMsg = document.createElement('div');
+      userMsg.className = 'user-msg';
+      userMsg.textContent = question;
+      chatFlow.appendChild(userMsg);
       input.value = '';
 
-      // Bot Loading Card
       const loadingCard = document.createElement('div');
       loadingCard.className = 'bot-card';
       loadingCard.innerHTML = `
         <div class="card-meta-bar">
-          <div class="badges-group">
-            <span class="conf-badge"><span class="loading-spinner"></span> SEARCHING BIOMEDICAL DATABASES...</span>
-          </div>
-          <span class="latency-tag">Executing Planner, Concurrent Retrieval & Consensus Verification</span>
+          <span class="conf-badge">EXECUTING MULTI-STAGE PIPELINE...</span>
         </div>
-        <p style="font-size: 0.85rem; color: #94a3b8; font-family: var(--font-mono);">
-          Querying PubMed (NCBI), ChEMBL REST, PubChem PUG, and DrugBank... Computing consensus meter and citation stance tags.
-        </p>
+        <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan);">
+          🔍 Querying PubMed, ChEMBL, PubChem, DrugBank...
+        </div>
       `;
       chatFlow.appendChild(loadingCard);
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
       try {
-        const resp = await fetch(API_ENDPOINT, {
+        const resp = await fetch('/api/query', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question })
         });
-
+        
         const data = await resp.json();
         chatFlow.removeChild(loadingCard);
 
+        if (resp.status === 403 && data.detail && data.detail.trial_limit_reached) {
+          openAuthModal('register', true);
+          return;
+        }
+
         if (!resp.ok) {
-          throw new Error(data.detail || 'API Request Failed');
+          throw new Error(typeof data.detail === 'string' ? data.detail : 'API Request Failed');
         }
 
         renderResponseCard(data);
@@ -533,48 +754,30 @@
       const card = document.createElement('div');
       card.className = 'bot-card';
 
-      // Consensus Meter Badge Styling
       let consensusClass = 'consensus-strong';
       const cLabel = consensus.label || 'Strong Consensus';
-      if (cLabel.includes('Mixed')) {
-        consensusClass = 'consensus-mixed';
-      } else if (cLabel.includes('Conflicting')) {
-        consensusClass = 'consensus-conflicting';
-      }
+      if (cLabel.includes('Mixed')) consensusClass = 'consensus-mixed';
+      else if (cLabel.includes('Conflicting')) consensusClass = 'consensus-conflicting';
 
       const consensusText = `${cLabel.toUpperCase()} (${consensus.supports || 0} supports / ${consensus.contradicts || 0} contrasts / ${consensus.total_sources || 0} total)`;
 
-      let evidenceHTML = '';
-      if (evidenceList.length > 0) {
-        evidenceHTML = evidenceList.map(item => {
-          let stanceTagClass = 'stance-supports';
-          let stanceText = (item.stance || 'SUPPORTS').toUpperCase();
-          
-          if (stanceText.includes('CONTRAST') || stanceText.includes('CONTRADICT')) {
-            stanceTagClass = 'stance-contrasts';
-            stanceText = 'CONTRASTS';
-          } else if (stanceText.includes('MENTION')) {
-            stanceTagClass = 'stance-mentions';
-            stanceText = 'MENTIONS';
-          }
+      let evidenceHTML = evidenceList.map(item => {
+        let stanceTagClass = 'stance-supports';
+        let stanceText = (item.stance || 'SUPPORTS').toUpperCase();
+        if (stanceText.includes('CONTRAST')) stanceTagClass = 'stance-contrasts';
+        else if (stanceText.includes('MENTION')) stanceTagClass = 'stance-mentions';
 
-          return `
-            <div class="evidence-card">
-              <div class="ev-header">
-                <span class="ev-source">${item.source || 'DATABASE'}</span>
-                <span class="stance-tag ${stanceTagClass}">${stanceText}</span>
-              </div>
-              <div class="ev-claim">${item.claim || ''}</div>
-              ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" class="ev-link">View Source Document &rarr;</a>` : ''}
+        return `
+          <div class="evidence-card">
+            <div class="ev-header">
+              <span class="ev-source">${item.source || 'DATABASE'}</span>
+              <span class="stance-tag ${stanceTagClass}">${stanceText}</span>
             </div>
-          `;
-        }).join('');
-      } else {
-        evidenceHTML = `<div style="font-family: var(--font-mono); font-size: 0.8rem; color: #94a3b8;">No direct database claims retrieved for this query.</div>`;
-      }
-
-      let agreementsHTML = (verifier.agreements || []).map(a => `<li style="margin-left: 1.2rem;">${a}</li>`).join('');
-      let conflictsHTML = (verifier.conflicts || []).map(c => `<li style="margin-left: 1.2rem; color: #fcd34d;">${c}</li>`).join('');
+            <div class="ev-claim">${item.claim || ''}</div>
+            ${item.url ? `<a href="${item.url}" target="_blank" class="ev-link">View Source &rarr;</a>` : ''}
+          </div>
+        `;
+      }).join('');
 
       card.innerHTML = `
         <div class="card-meta-bar">
@@ -582,22 +785,8 @@
             <span class="conf-badge">${final.confidence_score || 0}% CONFIDENCE SCORE</span>
             <span class="consensus-badge ${consensusClass}">${consensusText}</span>
           </div>
-          <span class="latency-tag">Total Pipeline Latency: ${data.latency_ms || 0} ms</span>
+          <span class="latency-tag">Latency: ${data.latency_ms || 0} ms</span>
         </div>
-
-        ${verifier.agreements && verifier.agreements.length > 0 ? `
-          <div>
-            <div class="section-title">Verified Agreements</div>
-            <ul style="font-size: 0.85rem; color: #34d399; line-height: 1.6;">${agreementsHTML}</ul>
-          </div>
-        ` : ''}
-
-        ${verifier.conflicts && verifier.conflicts.length > 0 ? `
-          <div>
-            <div class="section-title" style="color: var(--accent-amber);">Conflict / Safety Flags</div>
-            <ul style="font-size: 0.85rem; line-height: 1.6;">${conflictsHTML}</ul>
-          </div>
-        ` : ''}
 
         <div>
           <div class="section-title">Retrieved Evidence (${evidenceList.length} Items)</div>
@@ -606,15 +795,136 @@
 
         <div>
           <div class="section-title">AI Summary Synthesis</div>
-          <div class="ai-summary-box">${final.ai_summary || 'No summary generated.'}</div>
-        </div>
-
-        <div class="disclaimer-strip">
-          🛡️ ${final.disclaimer || 'Research and informational tool only — not intended for diagnosis or treatment.'}
+          <div class="ai-summary-box">${final.ai_summary || ''}</div>
         </div>
       `;
 
       chatFlow.appendChild(card);
+    }
+
+    async function openSessionsModal() {
+      document.getElementById('sessions-modal').classList.add('active');
+      const listElem = document.getElementById('sessions-list');
+      listElem.innerHTML = '<div style="color: var(--text-sub); font-size: 0.85rem;">Loading sessions...</div>';
+
+      try {
+        const res = await fetch('/api/sessions');
+        const data = await res.json();
+        
+        if (!data.sessions || data.sessions.length === 0) {
+          listElem.innerHTML = '<div style="color: var(--text-sub); font-size: 0.85rem;">No saved sessions yet. Run queries while logged in to build your session history!</div>';
+          return;
+        }
+
+        listElem.innerHTML = data.sessions.map(s => `
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-dark); padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.4rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--accent-cyan); font-family: var(--font-mono);">
+              <span>${new Date(s.created_at).toLocaleDateString()}</span>
+              <span>SCORE: ${s.confidence_score || 0}%</span>
+            </div>
+            <div style="font-weight: 600; font-size: 0.95rem;">${s.query_text}</div>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              ${(s.topics || []).map(t => `<span style="font-size: 0.68rem; font-family: var(--font-mono); background: rgba(6,182,212,0.1); border: 1px solid var(--border-cyan); color: var(--accent-cyan); padding: 0.1rem 0.4rem; border-radius: 4px;">${t}</span>`).join('')}
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        listElem.innerHTML = `<div style="color: var(--accent-rose); font-size: 0.85rem;">Failed to load sessions: ${err.message}</div>`;
+      }
+    }
+
+    async function openResearchMapModal() {
+      document.getElementById('graph-modal').classList.add('active');
+      const canvas = document.getElementById('graph-canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight - 80;
+
+      ctx.fillStyle = '#0b1120';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px JetBrains Mono';
+      ctx.fillText('Loading Research Map graph...', 20, 40);
+
+      try {
+        const res = await fetch('/api/graph/user');
+        const graph = await res.json();
+
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (!graph.nodes || graph.nodes.length === 0) {
+          ctx.fillText('No graph data yet. Run queries to connect your topics!', 20, 40);
+          return;
+        }
+
+        renderCanvasGraph(canvas, ctx, graph);
+      } catch (e) {
+        ctx.fillStyle = '#f43f5e';
+        ctx.fillText('Error loading research map.', 20, 40);
+      }
+    }
+
+    function renderCanvasGraph(canvas, ctx, graph) {
+      const nodes = graph.nodes;
+      const edges = graph.edges;
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Assign layout positions
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      nodes.forEach((n, idx) => {
+        if (n.type === 'Researcher') {
+          n.x = centerX;
+          n.y = centerY;
+          n.color = '#06b6d4';
+        } else if (n.type === 'Topic') {
+          const angle = (idx / nodes.length) * Math.PI * 2;
+          n.x = centerX + Math.cos(angle) * 160;
+          n.y = centerY + Math.sin(angle) * 160;
+          n.color = '#10b981';
+        } else {
+          const angle = (idx / nodes.length) * Math.PI * 2 + 0.5;
+          n.x = centerX + Math.cos(angle) * 240;
+          n.y = centerY + Math.sin(angle) * 240;
+          n.color = '#8b5cf6';
+        }
+      });
+
+      const nodeMap = {};
+      nodes.forEach(n => nodeMap[n.id] = n);
+
+      // Draw Edges
+      edges.forEach(e => {
+        const src = nodeMap[e.source];
+        const tgt = nodeMap[e.target];
+        if (src && tgt) {
+          ctx.beginPath();
+          ctx.moveTo(src.x, src.y);
+          ctx.lineTo(tgt.x, tgt.y);
+          ctx.strokeStyle = e.type === 'HAS_SESSION' ? 'rgba(6,182,212,0.3)' : 'rgba(139,92,246,0.3)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+      });
+
+      // Draw Nodes
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.type === 'Researcher' ? 14 : 8, 0, Math.PI * 2);
+        ctx.fillStyle = n.color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '11px Plus Jakarta Sans';
+        ctx.fillText(n.name || n.type, n.x + 12, n.y + 4);
+      });
     }
   </script>
 </body>

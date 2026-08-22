@@ -8,6 +8,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.db.mongo import connect_to_mongo, close_mongo_connection
 from app.api.routes_query import router as query_router
+from app.api.routes_auth import router as auth_router
+from app.api.routes_sessions import router as sessions_router
+from app.api.routes_graph import router as graph_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("biomindq")
@@ -41,6 +44,9 @@ app.add_middleware(
 )
 
 app.include_router(query_router)
+app.include_router(auth_router)
+app.include_router(sessions_router)
+app.include_router(graph_router)
 
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static"))
 index_path = os.path.join(static_dir, "index.html")

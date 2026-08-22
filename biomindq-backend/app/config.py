@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY", "")
     NCBI_API_KEY: Optional[str] = os.getenv("NCBI_API_KEY", "")
     DRUGBANK_API_KEY: Optional[str] = os.getenv("DRUGBANK_API_KEY", "")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "biomindq_super_secret_jwt_key_2026_safe_hash")
+    PINECONE_API_KEY: Optional[str] = os.getenv("PINECONE_API_KEY", "")
+    PINECONE_INDEX_NAME: str = os.getenv("PINECONE_INDEX_NAME", "biomindq-sessions")
 
     model_config = SettingsConfigDict(
         env_file=".env",
