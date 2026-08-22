@@ -45,20 +45,18 @@ async def call_groq_structured(
     if not groq_manager.client:
         raise ValueError("GROQ_API_KEY is not configured in environment.")
 
-    # Ensure system prompt explicitly contains the word 'json' for Groq response_format requirements
     formatted_system_prompt = system_prompt
     if "json" not in formatted_system_prompt.lower():
         formatted_system_prompt += "\nRespond strictly in valid JSON format."
 
-    # Candidate models to try in sequence if a model ID is unavailable or errors
-    candidate_models: List[str] = [model]
-    if "8b" in model.lower() or "instant" in model.lower():
-        candidate_models.extend(["groq/compound-mini", "qwen/qwen3.6-27b", "allam-2-7b"])
-    else:
-        candidate_models.extend(["groq/compound", "openai/gpt-oss-120b", "groq/compound-mini"])
+    candidate_models: List[str] = [
+        model,
+        "llama3-8b-8192",
+        "llama3-70b-8192",
+        "groq/compound-mini"
+    ]
 
     candidate_models = list(dict.fromkeys(candidate_models))
-
     last_exception = None
 
     for m in candidate_models:

@@ -32,17 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll);
 
   // Touchpad & Mouse Wheel listener:
-  // Scroll DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Enlarge BioMindQ
-  // Scroll UP (deltaY < 0) -> Zoom OUT, Center DNA, Normal BioMindQ
+  // Scroll DOWN (deltaY > 0) -> Zoom IN, Shift to Right, Blur DNA background
+  // Scroll UP (deltaY < 0) -> Zoom OUT, Center DNA, Unblur DNA
   window.addEventListener('wheel', (e) => {
     if (e.deltaY > 0) {
-      targetScrollProgress = Math.min(1, targetScrollProgress + 0.15);
+      targetScrollProgress = Math.min(1, targetScrollProgress + 0.2);
     } else if (e.deltaY < 0) {
-      targetScrollProgress = Math.max(0, targetScrollProgress - 0.15);
+      targetScrollProgress = Math.max(0, targetScrollProgress - 0.2);
     }
   }, { passive: true });
 
-  // Page starts at top of page (scrollY = 0: smaller & centered)
+  // Initial scroll calculation
   onScroll();
 });
 
@@ -187,9 +187,9 @@ function build3DDNAHelix() {
 }
 
 function onScroll() {
-  const maxScroll = window.innerHeight * 1.5;
-  if (maxScroll > 0) {
-    targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+  const scrollThreshold = window.innerHeight * 0.4;
+  if (scrollThreshold > 0) {
+    targetScrollProgress = Math.min(1, Math.max(0, window.scrollY / scrollThreshold));
   }
 }
 
@@ -222,18 +222,20 @@ function animate() {
     dnaGroup.rotation.z = THREE.MathUtils.lerp(dnaGroup.rotation.z, targetCamX * 0.1, 0.05);
   }
 
-  // BioMindQ Title: Enlarge and fade into bold prominence when scrolling DOWN
-  const brandTitle = document.getElementById('brand-title');
-  const brandKicker = document.getElementById('brand-kicker');
-  if (brandTitle) {
-    const titleScale = THREE.MathUtils.lerp(1.0, 1.85, currentScrollProgress);
-    const titleOpacity = THREE.MathUtils.lerp(0.7, 1.0, currentScrollProgress);
-    brandTitle.style.transform = `scale(${titleScale})`;
-    brandTitle.style.opacity = titleOpacity;
+  // Smoothly blur background canvas as DNA shifts to the right side
+  const canvasStage = document.getElementById('canvas-stage');
+  if (canvasStage) {
+    const blurPx = THREE.MathUtils.lerp(0, 10, currentScrollProgress);
+    const canvasOpacity = THREE.MathUtils.lerp(1.0, 0.55, currentScrollProgress);
+    canvasStage.style.filter = `blur(${blurPx}px)`;
+    canvasStage.style.opacity = canvasOpacity;
   }
-  if (brandKicker) {
-    const kickerScale = THREE.MathUtils.lerp(1.0, 1.2, currentScrollProgress);
-    brandKicker.style.transform = `scale(${kickerScale})`;
+
+  // BioMindQ Title: Enlarge smoothly when scrolling DOWN
+  const brandTitle = document.getElementById('brand-title');
+  if (brandTitle) {
+    const titleScale = THREE.MathUtils.lerp(1.0, 1.4, currentScrollProgress);
+    brandTitle.style.transform = `scale(${titleScale})`;
   }
 
   if (controls) controls.update();
