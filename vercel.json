@@ -1,6 +1,9 @@
 {
-  " cleanUrls\: true,
- \rewrites\: [
- { \source\: \/\, \destination\: \/graph.html\ }
- ]
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/graph.html"
+    }
+  ]
 }
