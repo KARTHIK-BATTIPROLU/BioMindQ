@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=5.0.0">
+  <link rel="stylesheet" href="styles.css?v=6.0.0">
 
   <!-- Three.js Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -88,7 +88,7 @@
             
             <div class="shelf-grid">
               
-              <button class="shelf-card active" onclick="dockTherapeutic('elexacaftor', event)">
+              <button class="shelf-card active" type="button" onclick="dockTherapeutic('elexacaftor', event)">
                 <div class="card-meta-top">
                   <span class="card-tag tag-blue">ORAL TABLET</span>
                   <span class="card-kd">Kd = 1.4 nM</span>
@@ -97,7 +97,7 @@
                 <div class="card-target">CFTR &Delta;F508 Exon 10 &bull; 84.6% Oral Bioavailability</div>
               </button>
 
-              <button class="shelf-card" onclick="dockTherapeutic('nusinersen', event)">
+              <button class="shelf-card" type="button" onclick="dockTherapeutic('nusinersen', event)">
                 <div class="card-meta-top">
                   <span class="card-tag tag-emerald">ANTISENSE OLIGO</span>
                   <span class="card-kd">Kd = 0.8 nM</span>
@@ -106,7 +106,7 @@
                 <div class="card-target">SMN2 Splice-Switching Modulator &bull; t1/2: 135d</div>
               </button>
 
-              <button class="shelf-card" onclick="dockTherapeutic('exacel', event)">
+              <button class="shelf-card" type="button" onclick="dockTherapeutic('exacel', event)">
                 <div class="card-meta-top">
                   <span class="card-tag tag-purple">CRISPR PRIME</span>
                   <span class="card-kd">99.98% Fidelity</span>
@@ -115,7 +115,7 @@
                 <div class="card-target">BCL11A Enhancer Editor &bull; Lipid Nanoparticle</div>
               </button>
 
-              <button class="shelf-card" onclick="dockTherapeutic('patisiran', event)">
+              <button class="shelf-card" type="button" onclick="dockTherapeutic('patisiran', event)">
                 <div class="card-meta-top">
                   <span class="card-tag tag-gold">LIPID RNAi</span>
                   <span class="card-kd">t1/2 = 4.8 hr</span>
@@ -165,13 +165,13 @@
             </div>
 
             <div class="dock-action-stack">
-              <button class="btn-dock-primary" onclick="triggerDockingAnimation()">
+              <button class="btn-dock-primary" type="button" onclick="triggerDockingAnimation()">
                 🧪 Dock Selected Drug Ligand
               </button>
-              <button class="btn-dock-outline" onclick="injectMutation()">
+              <button class="btn-dock-outline" type="button" onclick="injectMutation()">
                 ⚡ Inject Pathogenic Variant
               </button>
-              <button class="btn-dock-outline" onclick="restoreWildtype()">
+              <button class="btn-dock-outline" type="button" onclick="restoreWildtype()">
                 ↺ Restore Wildtype Reference
               </button>
             </div>
@@ -184,8 +184,8 @@
               <span><strong>Click & Drag</strong> to orbit 360&deg; &bull; <strong>Scroll</strong> to zoom</span>
             </div>
             <div class="vp-buttons">
-              <button class="btn-vp" id="orbit-btn" onclick="toggleAutoOrbit()">Pause Orbit</button>
-              <button class="btn-vp" onclick="resetPerspective()">Reset Perspective</button>
+              <button class="btn-vp" id="orbit-btn" type="button" onclick="toggleAutoOrbit()">Pause Orbit</button>
+              <button class="btn-vp" type="button" onclick="resetPerspective()">Reset Perspective</button>
             </div>
           </div>
 
@@ -201,21 +201,21 @@
     <div class="modal-sheet">
       <div class="sheet-head">
         <span class="sheet-kicker">PROTERA CLINICAL ACCESS</span>
-        <button class="sheet-close" onclick="closePortal()">&times;</button>
+        <button class="sheet-close" type="button" onclick="closePortal()">&times;</button>
       </div>
       <h3 class="sheet-title">Request DNA Ligand Docking Coordinates</h3>
       <p class="sheet-sub">
         Submit institutional credentials for raw PDB/SDF coordinate files and clinical protocol sheets.
       </p>
 
-      <form onsubmit="handlePortalSubmit(event)" class="sheet-form">
+      <form novalidate onsubmit="handlePortalSubmit(event)" class="sheet-form">
         <div class="input-cell">
           <label>Principal Investigator / Full Name</label>
-          <input type="text" placeholder="Dr. Julian Vance, MD, Ph.D." required>
+          <input type="text" id="pi-name" placeholder="Dr. Julian Vance, MD, Ph.D.">
         </div>
         <div class="input-cell">
           <label>Institutional Email</label>
-          <input type="email" placeholder="jvance@stanford.edu" required>
+          <input type="email" id="pi-email" placeholder="jvance@stanford.edu">
         </div>
         <div class="input-cell">
           <label>Therapeutic Focus Area</label>
@@ -225,13 +225,13 @@
             <option>CRISPR Prime Editing In Vivo Delivery</option>
           </select>
         </div>
-        <button type="submit" class="btn-sheet-submit">
+        <button type="button" onclick="handlePortalSubmit(event)" class="btn-sheet-submit">
           <span>Submit Verification Request</span>
         </button>
       </form>
     </div>
   </div>
 
-  <script src="app.js?v=5.0.0"></script>
+  <script src="app.js?v=6.0.0"></script>
 </body>
 </html>
