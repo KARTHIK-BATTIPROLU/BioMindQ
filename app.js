@@ -2,8 +2,8 @@
  * BIOMINDQ // LANDING PAGE V2 3D SCROLL & CHATBOT ENGINE
  */
 
-// Master Chatbot Console URL Constant
-const CHATBOT_URL = "http://localhost:3001"; // One-line edit swaps in real deployed URL
+// Master Chatbot Console URL Constant pointing to deployed Render backend
+const CHATBOT_URL = "https://biomindq-backend.onrender.com/chat"; 
 
 let scene, camera, renderer, controls;
 let autoOrbit = true;
