@@ -51,9 +51,10 @@ async def call_groq_structured(
 
     candidate_models: List[str] = [
         model,
-        "llama3-8b-8192",
-        "llama3-70b-8192",
-        "groq/compound-mini"
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "groq/compound-mini",
+        "openai/gpt-oss-120b"
     ]
 
     candidate_models = list(dict.fromkeys(candidate_models))
