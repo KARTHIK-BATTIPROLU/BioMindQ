@@ -174,6 +174,46 @@
       gap: 1.75rem;
     }
 
+    /* How It Works 4-Step Methodology Strip (Section 04.0) */
+    .how-it-works-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .how-step-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .how-step-num {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: var(--accent-blue-light);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .how-step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .how-step-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
     .presets-row {
       display: flex;
       gap: 0.65rem;
@@ -236,6 +276,74 @@
       box-shadow: var(--shadow-card);
     }
 
+    /* Section 03.0 Staged Pipeline Strip */
+    .pipeline-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      gap: 0.5rem;
+    }
+
+    .pipeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .step-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: var(--accent-blue-light);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .step-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .step-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .step-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .badge-green {
+      background: var(--accent-emerald-light);
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .pipeline-arrow {
+      color: var(--text-subtle);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* Meta Bar & Badges */
     .card-meta-bar {
       display: flex;
       align-items: center;
@@ -305,6 +413,38 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 0.65rem;
+    }
+
+    /* Section Callouts */
+    .example-block {
+      padding: 1.25rem;
+      border-radius: 10px;
+    }
+
+    .agreement-block {
+      background: var(--accent-emerald-light);
+      border-left: 4px solid var(--accent-emerald);
+    }
+
+    .conflict-block {
+      background: var(--accent-amber-light);
+      border-left: 4px solid var(--accent-amber);
+    }
+
+    .block-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .title-green { color: #065f46; }
+    .title-amber { color: #92400e; }
+
+    .claim-list {
+      padding-left: 1.2rem;
+      color: var(--text-dark);
+      font-size: 0.92rem;
+      line-height: 1.6;
     }
 
     .evidence-grid {
@@ -459,7 +599,7 @@
       box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
     }
 
-    /* Modal Dialogs (Neat Landing Page Styling) */
+    /* Modal Dialogs */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -555,6 +695,17 @@
       border: 1px solid var(--border-card);
       border-radius: 12px;
     }
+
+    @media (max-width: 768px) {
+      .pipeline-strip, .how-it-works-strip {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+      }
+      .pipeline-arrow {
+        transform: rotate(90deg);
+        align-self: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -584,6 +735,31 @@
 
   <!-- Main Chat Flow -->
   <main>
+    
+    <!-- 04.0 / HOW IT WORKS Steps Bar (Landing Page Section 04.0) -->
+    <div class="how-it-works-strip">
+      <div class="how-step-card">
+        <span class="how-step-num font-mono">01</span>
+        <h4 class="how-step-title">Ask</h4>
+        <p class="how-step-desc">Ask a biomedical research question in plain language.</p>
+      </div>
+      <div class="how-step-card">
+        <span class="how-step-num font-mono">02</span>
+        <h4 class="how-step-title">Plan & Retrieve</h4>
+        <p class="how-step-desc">Queries PubMed, ChEMBL, PubChem, & DrugBank simultaneously.</p>
+      </div>
+      <div class="how-step-card">
+        <span class="how-step-num font-mono">03</span>
+        <h4 class="how-step-title">Cross-Verify</h4>
+        <p class="how-step-desc">Compares claims across sources. Agreement raises confidence; conflicts are flagged.</p>
+      </div>
+      <div class="how-step-card">
+        <span class="how-step-num font-mono">04</span>
+        <h4 class="how-step-title">Answer, Labeled</h4>
+        <p class="how-step-desc">Retrieved evidence and AI synthesis delivered with a calibrated confidence score.</p>
+      </div>
+    </div>
+
     <div class="presets-row">
       <button class="btn-preset" onclick="setQuery('What is known about metformin\'s interaction with AMPK?')">🧪 Metformin & AMPK</button>
       <button class="btn-preset" onclick="setQuery('Does ibuprofen interact with lisinopril?')">💊 Ibuprofen vs Lisinopril</button>
@@ -764,6 +940,41 @@
       const loadingCard = document.createElement('div');
       loadingCard.className = 'bot-card';
       loadingCard.innerHTML = `
+        <!-- Staged Pipeline Strip (Landing Page Section 03.0) -->
+        <div class="pipeline-strip">
+          <div class="pipeline-step">
+            <span class="step-num font-mono">01</span>
+            <div class="step-content">
+              <span class="step-label">Query Received</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">02</span>
+            <div class="step-content">
+              <span class="step-label">Multi-Source Retrieval</span>
+              <span class="step-sub font-mono">PubMed / ChEMBL / PubChem / DrugBank</span>
+              <span class="status-badge badge-green">⚡ Querying</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">03</span>
+            <div class="step-content">
+              <span class="step-label">Cross-Verification</span>
+              <span class="step-sub font-mono">Stance Tagging</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">04</span>
+            <div class="step-content">
+              <span class="step-label">Answer & Scored</span>
+            </div>
+          </div>
+        </div>
+
         <div class="card-meta-bar">
           <span class="conf-badge">EXECUTING MULTI-STAGE PIPELINE...</span>
         </div>
@@ -848,7 +1059,46 @@
         `;
       }).join('');
 
+      let agreementsHTML = (verifier.agreements || []).map(a => `<li>${a}</li>`).join('');
+      let conflictsHTML = (verifier.conflicts || []).map(c => `<li>${c}</li>`).join('');
+
       card.innerHTML = `
+        <!-- Section 03.0 Staged Pipeline Strip (From Landing Page) -->
+        <div class="pipeline-strip">
+          <div class="pipeline-step">
+            <span class="step-num font-mono">01</span>
+            <div class="step-content">
+              <span class="step-label">Query Received</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">02</span>
+            <div class="step-content">
+              <span class="step-label">Multi-Source Retrieval</span>
+              <span class="step-sub font-mono">PubMed / ChEMBL / PubChem / DrugBank</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">03</span>
+            <div class="step-content">
+              <span class="step-label">Cross-Verification</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+          <div class="pipeline-arrow">&rarr;</div>
+          <div class="pipeline-step">
+            <span class="step-num font-mono">04</span>
+            <div class="step-content">
+              <span class="step-label">Answer, Labeled & Scored</span>
+              <span class="status-badge badge-green">✓ Verified</span>
+            </div>
+          </div>
+        </div>
+
         <div class="card-meta-bar">
           <div class="badges-group">
             <span class="conf-badge">${final.confidence_score || 0}% CONFIDENCE SCORE</span>
@@ -856,6 +1106,20 @@
           </div>
           <span class="latency-tag">Latency: ${data.latency_ms || 0} ms</span>
         </div>
+
+        ${verifier.agreements && verifier.agreements.length > 0 ? `
+          <div class="example-block agreement-block">
+            <div class="block-title title-green">✓ Verified Agreements</div>
+            <ul class="claim-list">${agreementsHTML}</ul>
+          </div>
+        ` : ''}
+
+        ${verifier.conflicts && verifier.conflicts.length > 0 ? `
+          <div class="example-block conflict-block">
+            <div class="block-title title-amber">⚠ Conflict / Safety Flags</div>
+            <ul class="claim-list" style="color: #78350f;">${conflictsHTML}</ul>
+          </div>
+        ` : ''}
 
         <div>
           <div class="section-title">Retrieved Evidence (${evidenceList.length} Items)</div>
@@ -865,6 +1129,10 @@
         <div>
           <div class="section-title">AI Summary Synthesis</div>
           <div class="ai-summary-box">${final.ai_summary || ''}</div>
+        </div>
+
+        <div class="disclaimer-strip">
+          Research and informational tool only — not intended for diagnosis or treatment.
         </div>
       `;
 
