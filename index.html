@@ -63,8 +63,7 @@
 
       <!-- Right Column: Interactive DNA Visual Canvas -->
       <div class="hero-visual">
-        <div class="dna-stage">
-          <canvas id="dnaCanvas"></canvas>
+        <div class="dna-stage" id="canvas-stage">
           <div class="dna-overlay-card font-mono">
             <span class="card-title">LIVE TARGET ANALYSIS</span>
             <span class="card-stat">AMPK / Complex I</span>
@@ -391,6 +390,8 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
