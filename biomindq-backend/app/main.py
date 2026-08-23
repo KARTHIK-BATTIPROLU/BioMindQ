@@ -50,14 +50,37 @@ app.include_router(graph_router)
 
 static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static"))
 index_path = os.path.join(static_dir, "index.html")
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+landing_index_path = os.path.join(root_dir, "index.html")
 
-# Directly serve index.html at root / and /chat
+# Serve Chatbot UI at / and /chat
 @app.get("/", include_in_schema=False)
 @app.get("/chat", include_in_schema=False)
 async def serve_chatbot_ui():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "BioMindQ API is running. Chatbot UI index.html not found."}
+
+# Serve 3D WebGL Landing Page at /landing
+@app.get("/landing", include_in_schema=False)
+async def serve_landing_page():
+    if os.path.exists(landing_index_path):
+        return FileResponse(landing_index_path)
+    return FileResponse(index_path)
+
+@app.get("/styles.css", include_in_schema=False)
+async def serve_landing_styles():
+    landing_styles = os.path.join(root_dir, "styles.css")
+    if os.path.exists(landing_styles):
+        return FileResponse(landing_styles, media_type="text/css")
+    return {"error": "styles.css not found"}
+
+@app.get("/app.js", include_in_schema=False)
+async def serve_landing_js():
+    landing_js = os.path.join(root_dir, "app.js")
+    if os.path.exists(landing_js):
+        return FileResponse(landing_js, media_type="application/javascript")
+    return {"error": "app.js not found"}
 
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir, html=True), name="static")

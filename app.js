@@ -3,7 +3,7 @@
  */
 
 // Master Chatbot Console URL Constant pointing to BioMindQ backend
-const CHATBOT_URL = "http://localhost:3001"; 
+const CHATBOT_URL = "/chat"; 
 
 let scene, camera, renderer, controls;
 let autoOrbit = true;
