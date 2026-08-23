@@ -1,77 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" class="notranslate" translate="no">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google" content="notranslate">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>BioMindQ // Evidence-Grounded Biomedical AI</title>
-  
-  <!-- Premium Modern Fonts -->
+  <title>BioMindQ // Evidence-Grounded Biomedical Research Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="styles.css?v=12.0.0">
-
-  <!-- Three.js Core -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="light-theme notranslate" translate="no">
+<body class="light-theme">
 
-  <!-- Fullscreen 3D WebGL Canvas Layer -->
-  <div id="canvas-stage" class="canvas-stage"></div>
-
-  <!-- Hero Section Shell -->
-  <section class="hero-section">
-    <div class="brand-hero-left" id="brand-hero" translate="no">
-      <h1 class="brand-title" id="brand-title">BioMindQ</h1>
-      <p class="hero-problem-statement">
-        Biomedical answers you can verify — not just AI that sounds right. BioMindQ cross-checks every response against PubMed, ChEMBL, DrugBank, and PubChem before it reaches you.
-      </p>
-      <div class="hero-cta-wrapper">
-        <a href="http://localhost:3001" class="btn-primary-hero cta-chatbot-link">
-          Launch Research Console &rarr;
-        </a>
+  <!-- Header / Navigation Bar -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-group">
+        <span class="logo-dot"></span>
+        <span class="logo-text">BioMindQ</span>
       </div>
+      <div class="badge-eyebrow font-mono">NEXT-GEN COMPUTATIONAL DNA</div>
+      <nav class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#comparison">Difference</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#memory">Research Map</a>
+        <a href="#methodology">How It Works</a>
+      </nav>
+      <div class="nav-cta-group">
+        <a href="http://localhost:3001" class="btn-primary cta-chatbot-link">Launch Console &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      
+      <!-- Left Column: Copy & CTAs -->
+      <div class="hero-content">
+        <div class="hero-eyebrow font-mono">
+          <span class="eyebrow-pulse"></span>
+          NEXT-GEN COMPUTATIONAL DNA
+        </div>
+        <h1 class="hero-title">
+          Evidence-grounded research intelligence for <span class="highlight-text">biomedical science</span>.
+        </h1>
+        <p class="hero-subtitle">
+          BioMindQ queries PubMed, ChEMBL, PubChem, and DrugBank simultaneously — cross-verifying claims, surfacing conflicts, and building a <strong>persistent cross-session Research Map</strong> that never forgets your discoveries.
+        </p>
+        
+        <div class="hero-actions">
+          <a href="http://localhost:3001" class="btn-hero-primary cta-chatbot-link">Try Live Research Console &rarr;</a>
+          <a href="#pipeline" class="btn-hero-secondary">Explore 4-Stage Pipeline</a>
+        </div>
+
+        <div class="hero-proof-bar font-mono">
+          <span class="proof-item">✓ PubMed • ChEMBL • PubChem • DrugBank</span>
+          <span class="proof-divider">•</span>
+          <span class="proof-item">✓ Zero Hallucination Policy</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive DNA Visual Canvas -->
+      <div class="hero-visual">
+        <div class="dna-stage">
+          <canvas id="dnaCanvas"></canvas>
+          <div class="dna-overlay-card font-mono">
+            <span class="card-title">LIVE TARGET ANALYSIS</span>
+            <span class="card-stat">AMPK / Complex I</span>
+            <span class="card-tag">✓ VERIFIED GROUNDED</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- Landing Content Sections -->
-  <main class="landing-content">
-    
-    <!-- 01.5 / THE RESEARCH CRISIS -->
+  <!-- Main Body Content Container -->
+  <main class="page-content">
+
+    <!-- 01.0 / THE PROBLEM -->
     <section class="section-container" id="problem">
       <div class="section-inner">
-        <div class="eyebrow">01.5 / THE RESEARCH CRISIS</div>
-        <h2 class="section-title">Generic AI guesses. Biomedical research can't afford that.</h2>
+        <div class="eyebrow">01.0 / THE PROBLEM</div>
+        <h2 class="section-title">Generic AI produces fluent prose. Research requires evidence and long-term memory.</h2>
         
-        <div class="cards-grid grid-3">
-          <div class="info-card problem-card">
-            <h3 class="card-head">Fabricated citations</h3>
-            <p class="card-desc">Generic chatbots generate fluent, confident answers with no real source behind them.</p>
-            <div class="risk-pill">
-              <strong>Risk:</strong> a fabricated interaction or property can send research down a costly or unsafe path.
-            </div>
+        <div class="grid-3col">
+          <div class="info-card">
+            <h3 class="card-head">The Hallucination Trap</h3>
+            <p class="card-desc">Standard LLMs generate plausible-sounding drug interactions and citations that don't exist in literature, risking invalid hypotheses.</p>
+            <div class="risk-pill font-mono">HIGH RISK: Unverified AI claims in drug discovery</div>
           </div>
 
-          <div class="info-card problem-card">
-            <h3 class="card-head">Unstructured answers</h3>
-            <p class="card-desc">Compound data (dosage, interactions, chemical structure) gets flattened into prose a scientist then has to manually re-verify.</p>
-            <div class="risk-pill">
-              <strong>Risk:</strong> hours lost re-deriving what should have been a structured lookup.
-            </div>
+          <div class="info-card">
+            <h3 class="card-head">Black Box Reasoning</h3>
+            <p class="card-desc">Generic AI outputs a single block of text without separating retrieved data from model synthesis or highlighting contradictory studies.</p>
+            <div class="risk-pill font-mono">HIGH RISK: Undetected scientific conflicts</div>
           </div>
 
-          <div class="info-card problem-card">
-            <h3 class="card-head">False confidence</h3>
-            <p class="card-desc">Most AI tools never say "I'm not sure" — they fill gaps with plausible guesses instead of flagging uncertainty.</p>
-            <div class="risk-pill">
-              <strong>Risk:</strong> undetected disagreement between sources looks identical to consensus.
-            </div>
+          <div class="info-card">
+            <h3 class="card-head">Volatile Session Memory</h3>
+            <p class="card-desc">Traditional AI chatbots reset context when a chat ends. Return 2 weeks later and all your research history, entity links, and citations are lost.</p>
+            <div class="risk-pill font-mono">HIGH RISK: Wasted research hours & lost context</div>
           </div>
         </div>
       </div>
@@ -113,16 +143,26 @@
                 <td class="cell-generic"><span class="badge-cross">✗</span> Conflicts between sources go unflagged</td>
                 <td class="cell-biomindq"><span class="badge-check">●</span> Conflict / safety flags surfaced explicitly</td>
               </tr>
+              <tr>
+                <td class="cell-feature">Session Memory</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Volatile sessions; lost when tab closes or after 2 weeks</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Persistent Research Map; saved forever under user identity</td>
+              </tr>
+              <tr>
+                <td class="cell-feature">Cross-Session Recall</td>
+                <td class="cell-generic"><span class="badge-cross">✗</span> Zero memory across chats; must re-explain past findings</td>
+                <td class="cell-biomindq"><span class="badge-check">●</span> Graph-guided recall connects compounds & topics automatically</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- 03.0 / VERIFIED, NOT JUST GENERATED -->
+    <!-- 03.0 / VERIFIED, NOT JUST GENERATED (FEATURE #1) -->
     <section class="section-container" id="pipeline">
       <div class="section-inner">
-        <div class="eyebrow">03.0 / VERIFIED, NOT JUST GENERATED</div>
+        <div class="eyebrow">03.0 / FEATURE #1: VERIFIED RAG PIPELINE</div>
         <h2 class="section-title">Watch the pipeline work — not just the answer it produces.</h2>
 
         <!-- Staged Pipeline Strip -->
@@ -215,32 +255,68 @@
       </div>
     </section>
 
+    <!-- 03.5 / FEATURE #2: PERSISTENT RESEARCH MAP & MEMORY ENGINE -->
+    <section class="section-container" id="memory">
+      <div class="section-inner">
+        <div class="eyebrow">03.5 / FEATURE #2: PERSISTENT RESEARCH MEMORY</div>
+        <h2 class="section-title">Never lose a research thread — saved forever, recalled instantly.</h2>
+        <p style="font-size: 1.05rem; color: var(--text-body); max-width: 800px; margin-bottom: 2rem; line-height: 1.6;">
+          Traditional AI chatbots forget everything when a chat ends. BioMindQ introduces a <strong>Persistent Research Memory Layer</strong>. Every query, compound connection, and citation is saved permanently in your personal <strong>Research Knowledge Map</strong>. Return 2 weeks or 2 months later and pick up right where you left off.
+        </p>
+
+        <div class="grid-3col">
+          <div class="info-card" style="border-top: 4px solid var(--accent-blue);">
+            <h3 class="card-head">📜 Immutable Session History</h3>
+            <p class="card-desc">Every query, confidence score, stance tag, and PMID citation is saved permanently under your account. Access your complete research ledger anytime.</p>
+            <div class="font-mono" style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 700;">PERMANENT STORAGE ENABLED</div>
+          </div>
+
+          <div class="info-card" style="border-top: 4px solid var(--accent-emerald);">
+            <h3 class="card-head">🧠 Graph-Guided Recall (<1.5s)</h3>
+            <p class="card-desc">Ask follow-up questions weeks later — BioMindQ automatically performs graph-guided vector search to inject past research context into new queries.</p>
+            <div class="font-mono" style="font-size: 0.8rem; color: var(--accent-emerald); font-weight: 700;">CROSS-SESSION VECTOR RECALL</div>
+          </div>
+
+          <div class="info-card" style="border-top: 4px solid var(--accent-purple);">
+            <h3 class="card-head">🧬 2D Interactive Knowledge Maps</h3>
+            <p class="card-desc">Visualize your growing research network in real time — connecting researcher nodes, target compounds, pathways, and sessions into one interactive graph.</p>
+            <div class="font-mono" style="font-size: 0.8rem; color: var(--accent-purple); font-weight: 700;">KNOWLEDGE GRAPH VISUALIZER</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 04.0 / HOW IT WORKS -->
     <section class="section-container" id="methodology">
       <div class="section-inner">
         <div class="eyebrow">04.0 / HOW IT WORKS</div>
-        <h2 class="section-title">From question to verified answer, in four steps.</h2>
+        <h2 class="section-title">From question to verified answer, in five steps.</h2>
 
-        <div class="steps-grid">
+        <div class="steps-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
           <div class="step-card">
             <span class="step-badge-num font-mono">01</span>
             <h3 class="step-title">Ask</h3>
-            <p class="step-text">You ask a question in plain language.</p>
+            <p class="step-text">You ask a research question in plain language.</p>
           </div>
           <div class="step-card">
             <span class="step-badge-num font-mono">02</span>
             <h3 class="step-title">Plan & Retrieve</h3>
-            <p class="step-text">The system determines which sources are relevant and queries them simultaneously.</p>
+            <p class="step-text">Queries PubMed, ChEMBL, PubChem, & DrugBank simultaneously.</p>
           </div>
           <div class="step-card">
             <span class="step-badge-num font-mono">03</span>
             <h3 class="step-title">Cross-Verify</h3>
-            <p class="step-text">Results are compared across sources. Agreement raises confidence; conflicts are flagged, never hidden.</p>
+            <p class="step-text">Results are compared across sources. Agreement raises confidence; conflicts are flagged.</p>
           </div>
           <div class="step-card">
             <span class="step-badge-num font-mono">04</span>
             <h3 class="step-title">Answer, Labeled</h3>
-            <p class="step-text">You get retrieved evidence and AI summary as two clearly separated parts, with a confidence score.</p>
+            <p class="step-text">Evidence and AI summary delivered with a calibrated confidence score.</p>
+          </div>
+          <div class="step-card" style="border-left: 3px solid var(--accent-purple);">
+            <span class="step-badge-num font-mono" style="background: var(--accent-purple-light); color: var(--accent-purple);">05</span>
+            <h3 class="step-title">Remember & Map</h3>
+            <p class="step-text">Saved permanently to your personal Research Map for cross-session recall weeks or months later.</p>
           </div>
         </div>
       </div>
@@ -286,7 +362,7 @@
         <div class="scope-grid">
           <div class="scope-box scope-is">
             <h3 class="scope-head head-green">✓ What it is</h3>
-            <p class="scope-text">A research and literature-synthesis tool for biomedical professionals, grounded in PubMed, ChEMBL, DrugBank, and PubChem.</p>
+            <p class="scope-text">A research and literature-synthesis tool for biomedical professionals, grounded in PubMed, ChEMBL, DrugBank, and PubChem with persistent cross-session Research Maps.</p>
           </div>
           <div class="scope-box scope-isnt">
             <h3 class="scope-head head-red">✗ What it isn't</h3>
@@ -300,94 +376,21 @@
       </div>
     </section>
 
-    <!-- 07.0 / PLANS -->
-    <section class="section-container" id="pricing">
-      <div class="section-inner">
-        <div class="eyebrow">07.0 / PLANS</div>
-        <h2 class="section-title">Start free. Scale as your research does.</h2>
-
-        <div class="pricing-grid">
-          
-          <!-- Free Plan -->
-          <div class="pricing-card">
-            <div class="plan-name font-mono">Free</div>
-            <div class="plan-price">₹0<span class="price-period font-mono">/month</span></div>
-            <div class="plan-target">For students and independent researchers exploring the tool.</div>
-            <ul class="plan-features">
-              <li>10 verified queries / month</li>
-              <li>PubMed + ChEMBL + PubChem access</li>
-              <li>Confidence score & conflict flags</li>
-              <li>Standard response time</li>
-              <li>Community support</li>
-            </ul>
-            <a href="http://localhost:3001" class="btn-plan cta-chatbot-link">Get Started</a>
-          </div>
-
-          <!-- Researcher Plan -->
-          <div class="pricing-card card-featured">
-            <div class="featured-tag font-mono">MOST POPULAR</div>
-            <div class="plan-name font-mono">Researcher</div>
-            <div class="plan-price">₹1,499<span class="price-period font-mono">/month</span></div>
-            <div class="plan-subnote font-mono">or ₹14,990/year (~2 months free)</div>
-            <div class="plan-target">For active researchers and postdocs doing regular literature work.</div>
-            <ul class="plan-features">
-              <li>Unlimited verified queries</li>
-              <li>All four sources, including DrugBank</li>
-              <li>Priority response time</li>
-              <li>Saved query history & export (CSV/PDF)</li>
-              <li>Email support</li>
-            </ul>
-            <a href="http://localhost:3001" class="btn-plan btn-plan-featured cta-chatbot-link">Get Started</a>
-          </div>
-
-          <!-- Lab / Team Plan -->
-          <div class="pricing-card">
-            <div class="plan-name font-mono">Lab / Team</div>
-            <div class="plan-price">₹6,999<span class="price-period font-mono">/month per lab</span></div>
-            <div class="plan-subnote font-mono">up to 10 seats; custom above that</div>
-            <div class="plan-target">For research labs, pharma R&D teams, and institutions.</div>
-            <ul class="plan-features">
-              <li>Everything in Researcher, for the whole team</li>
-              <li>Shared query history across the lab</li>
-              <li>Admin controls & usage analytics</li>
-              <li>API access for internal tooling</li>
-              <li>Priority support + onboarding call</li>
-            </ul>
-            <a href="mailto:sales@biomindq.ai" class="btn-plan">Contact Sales</a>
-          </div>
-
-        </div>
-
-        <p class="pricing-footnote font-mono">
-          Indicative pricing for the Indian market — final rates may vary by institution size and usage volume.
-        </p>
-      </div>
-    </section>
-
-    <!-- Final CTA & Footer -->
-    <section class="section-container section-final-cta" id="final-cta">
-      <div class="section-inner text-center">
-        <h2 class="final-title">Ask your next research question with sources attached.</h2>
-        <div class="final-cta-btn-wrap">
-          <a href="http://localhost:3001" class="btn-primary-hero cta-chatbot-link">
-            Launch Research Console &rarr;
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="landing-footer">
-      <div class="footer-inner">
-        <div class="footer-brand font-mono">BioMindQ</div>
-        <div class="footer-note">
-          Research and informational tool only — not intended for diagnosis or treatment.
-        </div>
-      </div>
-    </footer>
-
   </main>
 
-  <script src="app.js?v=12.0.0"></script>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-logo">BioMindQ</span>
+        <span class="footer-copy">© 2026 BioMindQ. Evidence-grounded biomedical research intelligence.</span>
+      </div>
+      <div class="footer-links font-mono">
+        <a href="http://localhost:3001" class="cta-chatbot-link">Launch Console</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
