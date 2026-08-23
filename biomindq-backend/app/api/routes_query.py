@@ -1,9 +1,12 @@
 import time
 import logging
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, Response, status, Depends
 from app.models.schemas import HealthResponse, QueryRequest, QueryResponse, FinalAnswer, VerifierOutput, ConsensusMeter
-from app.db.mongo import check_mongo_health, save_query_record
+from app.db.mongo import check_mongo_health, save_query_record, mongo_manager
+from app.auth.dependencies import verify_trial_or_auth
+from app.memory.vector_store import retrieve_past_context_with_timeout, embed_and_upsert_session
+from app.memory.graph import upsert_session_graph
 from app.llm.groq_client import check_groq_health
 from app.pipeline.planner import plan_query
 from app.pipeline.retrieval import execute_retrieval
@@ -22,7 +25,7 @@ async def health_check():
     return HealthResponse(mongo=mongo_status, groq=groq_status)
 
 @router.post("/query", response_model=QueryResponse)
-async def process_query(request: QueryRequest, http_request: Request):
+async def process_query(request: QueryRequest, http_request: Request, response: Response):
     question = request.question.strip()
     if not question:
         raise HTTPException(
@@ -30,10 +33,20 @@ async def process_query(request: QueryRequest, http_request: Request):
             detail="Question parameter cannot be empty."
         )
 
+    # Trial Gate & Authentication Check
+    auth_data = await verify_trial_or_auth(http_request, response)
+    user = auth_data.get("user")
+    user_id = user["id"] if user else None
+
     start_time = time.time()
     shared_client = getattr(http_request.app.state, "http_client", None)
 
     try:
+        # Step 0: Cross-Session Past Research Context Recall
+        past_context = []
+        if user_id:
+            past_context = await retrieve_past_context_with_timeout(user_id, question, extracted_topics=[])
+
         # Step 1: Planner (LLM #1 - Intent Classification & Search Planning)
         planner_output = await plan_query(question)
         intent = planner_output.get("intent", "database_search")
@@ -69,8 +82,14 @@ async def process_query(request: QueryRequest, http_request: Request):
         else:
             consensus_dict = compute_consensus_meter(item_stances)
 
-        # Step 5: Answer Generator (LLM #3)
-        final_answer_dict = await generate_final_answer(question, raw_results, verifier_dict, planner_output)
+        # Step 5: Answer Generator (LLM #3 - with injected past research context)
+        final_answer_dict = await generate_final_answer(
+            question=question,
+            raw_results=raw_results,
+            verifier_output=verifier_dict,
+            planner_output=planner_output,
+            past_context=past_context
+        )
 
         latency_ms = (time.time() - start_time) * 1000.0
 
@@ -90,7 +109,41 @@ async def process_query(request: QueryRequest, http_request: Request):
             "final_answer": final_answer_dict,
             "latency_ms": round(latency_ms, 2)
         }
+        if user_id:
+            query_record["user_id"] = user_id
         await save_query_record(query_record)
+
+        # Step 7: Persist user session & update Knowledge Graph + Vector Store
+        if user_id and mongo_manager.db is not None:
+            try:
+                now = datetime.now(timezone.utc)
+                topics = verifier_dict.get("entities_linked", [])
+                if not topics:
+                    words = [w.lower().strip("?,.!") for w in question.split() if len(w) > 4]
+                    topics = words[:3] if words else ["research"]
+
+                session_record = {
+                    "user_id": user_id,
+                    "created_at": now,
+                    "query_text": question,
+                    "topics": topics,
+                    "answer_payload": {
+                        "final_answer": final_answer_dict,
+                        "verifier_output": verifier_dict,
+                        "consensus": consensus_dict
+                    }
+                }
+                res = await mongo_manager.db["sessions"].insert_one(session_record)
+                s_id = str(res.inserted_id)
+
+                # Upsert into Knowledge Graph
+                await upsert_session_graph(user_id, s_id, question, topics)
+
+                # Upsert into Vector Store
+                summary = final_answer_dict.get("ai_summary", "")
+                await embed_and_upsert_session(user_id, s_id, question, summary, topics)
+            except Exception as se:
+                logger.warning(f"Failed to persist user session/graph for user {user_id}: {se}")
 
         return QueryResponse(
             final_answer=final_answer,

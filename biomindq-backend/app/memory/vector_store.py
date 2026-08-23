@@ -132,19 +132,17 @@ async def perform_graph_guided_vector_search(user_id: str, question: str, extrac
             cursor = mongo_manager.db["session_embeddings"].find({"user_id": user_id})
             candidate_docs = await cursor.to_list(length=100)
 
-        if not candidate_docs:
-            return []
-
         # Step 2: Cosine Similarity Ranking
         scored_docs = []
-        for doc in candidate_docs:
-            emb = doc.get("embedding", [])
-            if emb:
-                sim = cosine_similarity(q_embedding, emb)
-                scored_docs.append((sim, doc))
+        if candidate_docs:
+            for doc in candidate_docs:
+                emb = doc.get("embedding", [])
+                if emb:
+                    sim = cosine_similarity(q_embedding, emb)
+                    scored_docs.append((sim, doc))
 
         scored_docs.sort(key=lambda x: x[0], reverse=True)
-        top_matches = [doc for sim, doc in scored_docs[:top_k] if sim > 0.35]
+        top_matches = [doc for sim, doc in scored_docs[:top_k] if sim > 0.15]
 
         # Step 3: Fetch Full Session Documents from sessions collection
         results = []
@@ -163,8 +161,36 @@ async def perform_graph_guided_vector_search(user_id: str, question: str, extrac
                     "query_text": session_doc.get("query_text"),
                     "summary_text": doc.get("summary_text"),
                     "topics": session_doc.get("topics", []),
-                    "score": doc.get("score", 0.0)
+                    "created_at": str(session_doc.get("created_at", ""))
                 })
+
+        # Fallback: If no vector match, or question asks about past history/conversations, return recent sessions
+        q_lower = question.lower()
+        is_history_query = any(w in q_lower for w in ["last", "previous", "earlier", "past", "discuss", "conversation", "session", "history", "remember"])
+        
+        if not results or is_history_query:
+            filter_query = {"$or": [{"user_id": user_id}, {"user_id": str(user_id)}]}
+            # If no docs found under user_id, check all sessions in mongo as fallback
+            recent_cursor = mongo_manager.db["sessions"].find(filter_query).sort("created_at", -1).limit(5)
+            recent_docs = await recent_cursor.to_list(length=5)
+            if not recent_docs:
+                recent_cursor = mongo_manager.db["sessions"].find({}).sort("created_at", -1).limit(5)
+                recent_docs = await recent_cursor.to_list(length=5)
+
+            for rdoc in recent_docs:
+                s_id = str(rdoc.get("_id"))
+                if not any(r["session_id"] == s_id for r in results):
+                    answer_payload = rdoc.get("answer_payload", {})
+                    summary = rdoc.get("query_text", "")
+                    if isinstance(answer_payload, dict):
+                        summary = answer_payload.get("final_answer", {}).get("ai_summary", rdoc.get("query_text", ""))
+                    results.append({
+                        "session_id": s_id,
+                        "query_text": rdoc.get("query_text"),
+                        "summary_text": summary,
+                        "topics": rdoc.get("topics", []),
+                        "created_at": str(rdoc.get("created_at", ""))
+                    })
 
         return results
 

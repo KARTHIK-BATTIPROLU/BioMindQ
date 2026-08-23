@@ -1025,6 +1025,37 @@
     }
 
     function renderResponseCard(data) {
+        function formatFormattedSummary(summaryText) {
+          if (!summaryText) return '';
+          const lines = summaryText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          let html = '';
+          let inList = false;
+
+          lines.forEach(line => {
+            const isBullet = /^[•\-\*]\s+/.test(line) || /^(\d+[\.\)]\s+)/.test(line);
+            if (isBullet) {
+              if (!inList) {
+                html += '<ul style="margin: 0.75rem 0; padding-left: 1.5rem; list-style-type: disc;">';
+                inList = true;
+              }
+              const cleanLine = line.replace(/^[•\-\*]\s+/, '').replace(/^(\d+[\.\)]\s+)/, '');
+              html += `<li style="margin-bottom: 0.5rem; line-height: 1.6; color: var(--text-body);">${cleanLine}</li>`;
+            } else {
+              if (inList) {
+                html += '</ul>';
+                inList = false;
+              }
+              html += `<p style="margin-bottom: 0.75rem; line-height: 1.65; color: var(--text-body);">${line}</p>`;
+            }
+          });
+
+          if (inList) {
+            html += '</ul>';
+          }
+
+          return html;
+        }
+
       const chatFlow = document.getElementById('chat-flow');
       const final = data.final_answer || {};
       const verifier = data.verifier_output || {};
@@ -1128,7 +1159,7 @@
 
         <div>
           <div class="section-title">AI Summary Synthesis</div>
-          <div class="ai-summary-box">${final.ai_summary || ''}</div>
+          <div class="ai-summary-box">${formatFormattedSummary(final.ai_summary)}</div>
         </div>
 
         <div class="disclaimer-strip">

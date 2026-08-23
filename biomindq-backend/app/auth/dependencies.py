@@ -106,6 +106,8 @@ async def verify_trial_or_auth(request: Request, response: Response) -> Dict[str
         samesite="lax"
     )
 
+    await record_trial_usage(trial_token)
+
     return {"user": None, "is_authenticated": False, "trial_token": trial_token}
 
 async def record_trial_usage(trial_token: str):

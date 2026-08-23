@@ -14,7 +14,7 @@ groq_manager = GroqClientManager()
 
 def init_groq_client():
     if settings.GROQ_API_KEY:
-        groq_manager.client = AsyncGroq(api_key=settings.GROQ_API_KEY)
+        groq_manager.client = AsyncGroq(api_key=settings.GROQ_API_KEY, max_retries=0)
     else:
         groq_manager.client = None
 
@@ -50,11 +50,11 @@ async def call_groq_structured(
         formatted_system_prompt += "\nRespond strictly in valid JSON format."
 
     candidate_models: List[str] = [
-        model,
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-        "groq/compound-mini",
-        "openai/gpt-oss-120b"
+        "llama3-70b-8192",
+        "llama3-8b-8192",
+        "mixtral-8x7b-32768",
+        "gemma2-9b-it",
+        "groq/compound-mini"
     ]
 
     candidate_models = list(dict.fromkeys(candidate_models))

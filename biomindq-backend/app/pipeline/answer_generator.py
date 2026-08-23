@@ -9,14 +9,17 @@ logger = logging.getLogger(__name__)
 
 FIXED_DISCLAIMER = "Research and informational tool only — not intended for diagnosis or treatment."
 
-ANSWER_GENERATOR_SYSTEM_PROMPT = f"""You are the master BioMindQ answer generator.
+ANSWER_GENERATOR_SYSTEM_PROMPT = f"""You are the master BioMindQ research assistant with persistent cross-session memory.
 Your job is to produce a final response for a user's biomedical question or conversational query.
 
+Strict Formatting Rule:
+FORMAT YOUR "ai_summary" IN CLEAN BULLET POINTS. Every major point, recommendation, or past research session MUST be on a separate line starting with a bullet point ("• ").
+
 Strict Rules:
-1. If the user's input is a conversational follow-up, advice request, or meta question, provide a clear, helpful direct scientific synthesis in "ai_summary" and set "retrieved_evidence": [].
-2. If evidence items are provided, populate "retrieved_evidence": [{{"claim": "...", "source": "...", "url": "...", "stance": "SUPPORTS" | "CONTRASTS" | "MENTIONS"}}].
-3. "ai_summary": Your high-level synthesis explaining the answer in clear scientific language.
-4. "confidence_score": Integer 0 to 100 based on evaluation.
+1. If the user asks about previous conversations, past research, earlier findings, or past sessions, YOU MUST USE THE PROVIDED [USER PAST RESEARCH CONTEXT & MEMORY HISTORY] to list each past session on a separate bulleted line starting with "• ". NEVER state that you cannot recall previous interactions.
+2. If evidence items are retrieved, populate "retrieved_evidence": [{{"claim": "...", "source": "...", "url": "...", "stance": "SUPPORTS" | "CONTRASTS" | "MENTIONS"}}].
+3. "ai_summary": Your high-level scientific synthesis formatted in clear bullet points on separate lines.
+4. "confidence_score": Integer 0 to 100.
 5. "disclaimer": Must always be exactly "{FIXED_DISCLAIMER}".
 
 Respond strictly in valid JSON format matching:
@@ -32,13 +35,14 @@ async def generate_final_answer(
     question: str,
     raw_results: Dict[str, List[Dict[str, Any]]],
     verifier_output: Dict[str, Any],
-    planner_output: Optional[Dict[str, Any]] = None
+    planner_output: Optional[Dict[str, Any]] = None,
+    past_context: Optional[List[Dict[str, Any]]] = None
 ) -> Dict[str, Any]:
     intent = (planner_output or {}).get("intent", "database_search")
 
     if not settings.GROQ_API_KEY:
         logger.info("GROQ_API_KEY not configured; using fallback answer generator.")
-        return generate_fallback_answer(question, raw_results, verifier_output, planner_output)
+        return generate_fallback_answer(question, raw_results, verifier_output, planner_output, past_context)
 
     compact_data = {}
     for src, items in raw_results.items():
@@ -52,8 +56,16 @@ async def generate_final_answer(
             for item in items[:3]
         ]
 
+    past_context_str = ""
+    if past_context:
+        formatted_past = []
+        for p in past_context:
+            formatted_past.append(f"- Query: \"{p.get('query_text')}\" | Summary: {p.get('summary_text')} | Topics: {', '.join(p.get('topics', []))}")
+        past_context_str = "\n[USER PAST RESEARCH CONTEXT & MEMORY HISTORY]:\n" + "\n".join(formatted_past) + "\nNote: The user has persistent research memory. Reference their past sessions above directly when asked about previous conversations or research history!"
+
     user_prompt = f"""User Input: "{question}"
 Query Intent: {intent}
+{past_context_str}
 
 Verifier Evaluation:
 {json.dumps(verifier_output, indent=2)}
@@ -89,14 +101,29 @@ def generate_fallback_answer(
     question: str,
     raw_results: Dict[str, List[Dict[str, Any]]],
     verifier_output: Dict[str, Any],
-    planner_output: Optional[Dict[str, Any]] = None
+    planner_output: Optional[Dict[str, Any]] = None,
+    past_context: Optional[List[Dict[str, Any]]] = None
 ) -> Dict[str, Any]:
     intent = (planner_output or {}).get("intent", "database_search")
 
     if intent == "direct_answer":
+        if past_context:
+            past_summary_lines = []
+            for p in past_context[:3]:
+                past_summary_lines.append(f"• In session '{p.get('query_text')}': {p.get('summary_text')}")
+            summary_text = f"Based on your persistent research memory, here are your previous research sessions and findings:\n\n" + "\n\n".join(past_summary_lines)
+        else:
+            summary_text = (
+                f"To find the best biomedical solution for '{question}', try asking target questions such as:\n\n"
+                "• What is metformin's mechanism on AMPK?\n"
+                "• Does ibuprofen interact with lisinopril and reduce antihypertensive efficacy?\n"
+                "• Summarize GLP-1 receptor agonist findings on cardiovascular outcomes.\n\n"
+                "You can also search specific chemical compounds, target proteins, or disease indications."
+            )
+
         return {
             "retrieved_evidence": [],
-            "ai_summary": f"To find the best biomedical solution for '{question}', try asking a specific target question such as: 1) 'What is metformin's mechanism on AMPK?', 2) 'Does ibuprofen interact with lisinopril?', or 3) 'Summarize GLP-1 receptor agonist findings'. You can also search specific chemical compounds, target proteins, or disease indications.",
+            "ai_summary": summary_text,
             "confidence_score": 100,
             "disclaimer": FIXED_DISCLAIMER
         }
