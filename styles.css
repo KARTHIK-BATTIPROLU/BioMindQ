@@ -17,8 +17,6 @@
   --accent-amber: #f59e0b;
   --accent-amber-light: #fffbeb;
   --accent-rose: #ef4444;
-  --accent-purple: #8b5cf6;
-  --accent-purple-light: #f3e8ff;
 
   --text-dark: #0f172a;
   --text-body: #334155;
@@ -71,7 +69,6 @@ body.light-theme {
   height: 100vh;
   z-index: 1;
   pointer-events: all;
-  will-change: filter, opacity;
 }
 
 /* ==========================================================================
