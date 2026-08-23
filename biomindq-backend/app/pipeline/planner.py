@@ -6,22 +6,28 @@ from app.llm.groq_client import call_groq_structured
 
 logger = logging.getLogger(__name__)
 
-PLANNER_SYSTEM_PROMPT = """You are an expert biomedical research planner.
-Your job is to analyze a user's research question and select which biomedical database sources are genuinely relevant, then format specific search queries for each selected source.
+PLANNER_SYSTEM_PROMPT = """You are an expert biomedical research planner and query intent classifier.
+Your job is to analyze a user's input and determine whether it requires querying external biomedical databases or should be answered directly as a conversational response.
 
-Available sources:
-1. "pubmed": Best for scientific literature, clinical trials, disease overviews, mechanisms, and recent research findings. (Format query as key research terms/keywords).
-2. "chembl": Best for chemical compounds, bioactivity assay data, target binding affinities, IC50/Ki values. (Format query as compound/drug name or target).
-3. "pubchem": Best for chemical structures, compound descriptions, molecular properties, and CAS numbers. (Format query as compound/drug name).
-4. "drugbank": Best for drug mechanisms of action, drug-drug interactions, dosages, and pharmacology. (Format query as drug name).
+Classify into one of two intents:
+1. "direct_answer": For conversational follow-ups, general advice, meta-questions, greetings, or questions that do NOT ask for specific molecular, pharmacological, or clinical literature data (e.g., "how can I find a better solution?", "explain this further", "hello", "what databases do you use?").
+   - Set "sources": []
+   - Set "per_source_query": {}
 
-Rules:
-- Only include sources in "sources" that are relevant to the question.
-- Always provide "per_source_query" entries for selected sources.
-- If the question is completely out-of-scope or non-biomedical, return empty sources list [].
+2. "database_search": For questions requesting specific biomedical research data, chemical structures, bioactivity assays, drug interactions, clinical trials, or mechanisms.
+   - Select relevant sources from: "pubmed", "chembl", "pubchem", "drugbank".
+   - Format specific search queries per selected source in "per_source_query".
+
+Available sources for "database_search":
+- "pubmed": Scientific literature, clinical trials, disease mechanisms.
+- "chembl": Bioactivity assays, target binding affinities, IC50/Ki values.
+- "pubchem": Chemical structures, molecular properties, CAS numbers.
+- "drugbank": Drug mechanisms of action, drug-drug interactions, pharmacology.
 
 Respond strictly in valid JSON format matching:
 {
+  "intent": "database_search" | "direct_answer",
+  "reasoning": "string",
   "sources": ["string"],
   "per_source_query": {"source_name": "query_string"}
 }
@@ -32,7 +38,7 @@ async def plan_query(question: str) -> Dict[str, Any]:
         logger.info("GROQ_API_KEY not configured; using rule-based fallback planner.")
         return generate_fallback_plan(question)
 
-    user_prompt = f"Analyze this biomedical question and plan data retrieval:\n\"{question}\""
+    user_prompt = f"Analyze this user input and determine query intent & plan:\n\"{question}\""
 
     try:
         plan_dict = await call_groq_structured(
@@ -48,12 +54,37 @@ async def plan_query(question: str) -> Dict[str, Any]:
         return generate_fallback_plan(question)
 
 def generate_fallback_plan(question: str) -> Dict[str, Any]:
-    q_lower = question.lower()
+    q_lower = question.lower().strip()
+    
+    conversational_triggers = [
+        "how can i", "how to", "best solution", "better solution", "what is this",
+        "explain", "help me", "hello", "hi", "thanks", "who are you", "what can you do",
+        "show me", "tell me", "what next", "solution", "guide me"
+    ]
+    
+    biomedical_keywords = [
+        "metformin", "ampk", "ibuprofen", "lisinopril", "glp-1", "alzheimer", "cancer",
+        "inhibitor", "agonist", "antagonist", "kinase", "receptor", "assay", "smiles",
+        "ic50", "drug", "trial", "compound", "gene", "protein", "dna", "rna", "disease",
+        "interaction", "side effect", "pharmacology", "chembl", "pubmed", "pubchem", "drugbank"
+    ]
+
+    has_conversational = any(t in q_lower for t in conversational_triggers)
+    has_biomedical = any(b in q_lower for b in biomedical_keywords)
+
+    if has_conversational and not has_biomedical:
+        return {
+            "intent": "direct_answer",
+            "reasoning": "Conversational / follow-up query detected without specific biomedical entity target.",
+            "sources": [],
+            "per_source_query": {}
+        }
+
     sources: List[str] = []
     per_source_query: Dict[str, str] = {}
 
     words = [w.strip("?,.!") for w in q_lower.split()]
-    main_terms = [w for w in words if len(w) > 3 and w not in ["what", "does", "with", "from", "about", "have", "this", "that", "how"]]
+    main_terms = [w for w in words if len(w) > 3 and w not in ["what", "does", "with", "from", "about", "have", "this", "that", "how", "find", "solution"]]
     query_str = " ".join(main_terms[:3]) if main_terms else question
 
     if any(k in q_lower for k in ["interact", "interaction", "drug", "ibuprofen", "lisinopril", "metformin"]):
@@ -62,13 +93,22 @@ def generate_fallback_plan(question: str) -> Dict[str, Any]:
         sources.extend(["pubmed", "chembl"])
     elif any(k in q_lower for k in ["compound", "structure", "smiles", "chembl", "pubchem"]):
         sources.extend(["chembl", "pubchem"])
-    elif len(main_terms) > 0 and not any(k in q_lower for k in ["capital", "weather", "recipe", "sport", "movie"]):
+    elif has_biomedical:
         sources.extend(["pubmed", "chembl", "pubchem"])
+    else:
+        return {
+            "intent": "direct_answer",
+            "reasoning": "General non-target input.",
+            "sources": [],
+            "per_source_query": {}
+        }
 
     for s in sources:
         per_source_query[s] = query_str
 
     return {
+        "intent": "database_search",
+        "reasoning": "Biomedical research query requiring external database search.",
         "sources": list(dict.fromkeys(sources)),
         "per_source_query": per_source_query
     }

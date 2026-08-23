@@ -9,6 +9,8 @@ class QueryRequest(BaseModel):
     question: str = Field(..., description="Plain language biomedical research question")
 
 class PlannerOutput(BaseModel):
+    intent: str = Field(default="database_search", description="database_search | direct_answer")
+    reasoning: str = Field(default="", description="Reasoning for query intent classification")
     sources: List[str] = Field(default_factory=list, description="Selected data sources e.g. pubmed, chembl, pubchem, drugbank")
     per_source_query: Dict[str, str] = Field(default_factory=dict, description="Queries formatted per source")
 
@@ -29,7 +31,7 @@ class VerifierOutput(BaseModel):
     item_stances: List[ItemStance] = Field(default_factory=list)
 
 class ConsensusMeter(BaseModel):
-    label: str = Field(default="Strong Consensus", description="Strong Consensus | Mostly Supported | Mixed Evidence | Conflicting | No Evidence")
+    label: str = Field(default="Strong Consensus", description="Strong Consensus | Mostly Supported | Mixed Evidence | Conflicting | Direct Response")
     supports: int = 0
     contradicts: int = 0
     mentions: int = 0

@@ -768,7 +768,10 @@
       if (cLabel.includes('Mixed')) consensusClass = 'consensus-mixed';
       else if (cLabel.includes('Conflicting')) consensusClass = 'consensus-conflicting';
 
-      const consensusText = `${cLabel.toUpperCase()} (${consensus.supports || 0} supports / ${consensus.contradicts || 0} contrasts / ${consensus.total_sources || 0} total)`;
+      let consensusText = `${cLabel.toUpperCase()} (${consensus.supports || 0} supports / ${consensus.contradicts || 0} contrasts / ${consensus.total_sources || 0} total)`;
+      if (evidenceList.length === 0) {
+        consensusText = "DIRECT AI RESPONSE";
+      }
 
       let evidenceHTML = evidenceList.map(item => {
         let stanceTagClass = 'stance-supports';
@@ -788,6 +791,16 @@
         `;
       }).join('');
 
+      let evidenceBlockHTML = '';
+      if (evidenceList.length > 0) {
+        evidenceBlockHTML = `
+          <div>
+            <div class="section-title">Retrieved Evidence (${evidenceList.length} Items)</div>
+            <div class="evidence-grid">${evidenceHTML}</div>
+          </div>
+        `;
+      }
+
       card.innerHTML = `
         <div class="card-meta-bar">
           <div class="badges-group">
@@ -797,10 +810,7 @@
           <span class="latency-tag">Latency: ${data.latency_ms || 0} ms</span>
         </div>
 
-        <div>
-          <div class="section-title">Retrieved Evidence (${evidenceList.length} Items)</div>
-          <div class="evidence-grid">${evidenceHTML}</div>
-        </div>
+        ${evidenceBlockHTML}
 
         <div>
           <div class="section-title">AI Summary Synthesis</div>
