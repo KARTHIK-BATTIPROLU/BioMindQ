@@ -1179,19 +1179,24 @@
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight - 90;
 
-      ctx.fillStyle = '#f8fafc';
+      // Clean Light Background (#fafafa / #f8fafc)
+      ctx.fillStyle = '#fafafa';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = '#64748b';
-      ctx.font = '14px JetBrains Mono';
+      ctx.font = '600 13px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('Loading Research Map graph...', 25, 45);
 
       try {
         const res = await fetch('/api/graph/user');
         const graph = await res.json();
 
+        // Clear with clean light fill
+        ctx.fillStyle = '#fafafa';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         if (!graph.nodes || graph.nodes.length === 0) {
+          ctx.fillStyle = '#64748b';
           ctx.fillText('No graph data yet. Run queries to connect your topics!', 25, 45);
           return;
         }
@@ -1209,31 +1214,91 @@
       const width = canvas.width;
       const height = canvas.height;
 
+      // Fill Clean Light Background
+      ctx.fillStyle = '#fafafa';
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw subtle background grid dots
+      ctx.fillStyle = 'rgba(203, 213, 225, 0.4)';
+      for (let x = 20; x < width; x += 30) {
+        for (let y = 20; y < height; y += 30) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Draw Legend Strip at top right
+      const legendX = width - 240;
+      const legendY = 25;
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(legendX - 10, legendY - 15, 235, 75, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      const legendItems = [
+        { color: '#2563eb', label: 'Researcher Account' },
+        { color: '#10b981', label: 'Biomedical Topics' },
+        { color: '#8b5cf6', label: 'Saved Sessions' }
+      ];
+
+      legendItems.forEach((item, idx) => {
+        const ly = legendY + idx * 20;
+        ctx.beginPath();
+        ctx.arc(legendX, ly, 5, 0, Math.PI * 2);
+        ctx.fillStyle = item.color;
+        ctx.fill();
+
+        ctx.fillStyle = '#334155';
+        ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(item.label, legendX + 12, ly + 4);
+      });
+
       const centerX = width / 2;
       const centerY = height / 2;
 
-      nodes.forEach((n, idx) => {
+      // Position Nodes in Radial Layout
+      const topicNodes = nodes.filter(n => n.type === 'Topic');
+      const sessionNodes = nodes.filter(n => n.type === 'Session');
+
+      nodes.forEach(n => {
         if (n.type === 'Researcher') {
           n.x = centerX;
           n.y = centerY;
+          n.radius = 16;
           n.color = '#2563eb';
-        } else if (n.type === 'Topic') {
-          const angle = (idx / nodes.length) * Math.PI * 2;
-          n.x = centerX + Math.cos(angle) * 170;
-          n.y = centerY + Math.sin(angle) * 170;
-          n.color = '#10b981';
-        } else {
-          const angle = (idx / nodes.length) * Math.PI * 2 + 0.5;
-          n.x = centerX + Math.cos(angle) * 250;
-          n.y = centerY + Math.sin(angle) * 250;
-          n.color = '#8b5cf6';
+          n.strokeColor = '#1d4ed8';
         }
+      });
+
+      topicNodes.forEach((n, idx) => {
+        const angle = (idx / topicNodes.length) * Math.PI * 2;
+        const radius = Math.min(width, height) * 0.26;
+        n.x = centerX + Math.cos(angle) * radius;
+        n.y = centerY + Math.sin(angle) * radius;
+        n.radius = 10;
+        n.color = '#10b981';
+        n.strokeColor = '#059669';
+      });
+
+      sessionNodes.forEach((n, idx) => {
+        const angle = (idx / sessionNodes.length) * Math.PI * 2 + 0.3;
+        const radius = Math.min(width, height) * 0.38;
+        n.x = centerX + Math.cos(angle) * radius;
+        n.y = centerY + Math.sin(angle) * radius;
+        n.radius = 11;
+        n.color = '#8b5cf6';
+        n.strokeColor = '#7c3aed';
       });
 
       const nodeMap = {};
       nodes.forEach(n => nodeMap[n.id] = n);
 
-      // Draw Edges
+      // Draw Connecting Edges
       edges.forEach(e => {
         const src = nodeMap[e.source];
         const tgt = nodeMap[e.target];
@@ -1241,25 +1306,46 @@
           ctx.beginPath();
           ctx.moveTo(src.x, src.y);
           ctx.lineTo(tgt.x, tgt.y);
-          ctx.strokeStyle = e.type === 'HAS_SESSION' ? 'rgba(37,99,235,0.25)' : 'rgba(139,92,246,0.25)';
+          ctx.strokeStyle = e.type === 'HAS_SESSION' ? 'rgba(37, 99, 235, 0.3)' : 'rgba(16, 185, 129, 0.3)';
           ctx.lineWidth = 1.8;
           ctx.stroke();
         }
       });
 
-      // Draw Nodes
+      // Draw Nodes & Halo Halos
       nodes.forEach(n => {
+        // Soft outer glow for Researcher node
+        if (n.type === 'Researcher') {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius + 8, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
+          ctx.fill();
+        }
+
+        // Draw Core Circle
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.type === 'Researcher' ? 14 : 9, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fillStyle = n.color;
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
+        // Draw Text Label with White Stroke outline for 100% legibility
+        let rawLabel = n.name || n.type;
+        if (rawLabel.length > 28) {
+          rawLabel = rawLabel.substring(0, 26) + '...';
+        }
+
+        ctx.font = n.type === 'Researcher' ? 'bold 13px "Plus Jakarta Sans", sans-serif' : '600 11px "Plus Jakarta Sans", sans-serif';
+        
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3.5;
+        ctx.lineJoin = 'round';
+        ctx.strokeText(rawLabel, n.x + n.radius + 6, n.y + 4);
+
         ctx.fillStyle = '#0f172a';
-        ctx.font = '12px Plus Jakarta Sans';
-        ctx.fillText(n.name || n.type, n.x + 14, n.y + 4);
+        ctx.fillText(rawLabel, n.x + n.radius + 6, n.y + 4);
       });
     }
   </script>
